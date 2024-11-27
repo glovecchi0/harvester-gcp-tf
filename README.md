@@ -1,2 +1,2 @@
-# harvester-on-gcp-tf
+# harvester-gcp-tf
 Terraform modules for deploying Harvester on Google Cloud Compute Engine
