@@ -153,7 +153,23 @@ variable "ssh_username" {
 variable "startup_script" {
   description = "Custom startup script"
   type        = string
-  default     = "apt update && sudo apt upgrade -y ; apt install -y curl wget nfs-common qemu-kvm libvirt-clients libvirt-daemon-system cpu-checker virtinst"
+  default     = <<EOT
+# Enable connection to the VM's Serial Console
+systemctl start serial-getty@ttyS1.service
+systemctl enable serial-getty@ttyS1.service
+# Installation of pre-requisite packages
+apt update && sudo apt upgrade -y
+apt install -y curl wget nfs-common qemu-kvm libvirt-clients libvirt-daemon-system cpu-checker virtinst
+# Harvester's ISO download
+wget https://releases.rancher.com/harvester/v1.3.1/harvester-v1.3.1-amd64.iso -O /var/lib/libvirt/images/harvester.iso
+# Data disk partition
+parted /dev/sdb mklabel gpt
+parted /dev/sdb mkpart primary ext4 0% 100%
+mkfs.ext4 /dev/sdb1
+mkdir /mnt/newdisk
+mount /dev/sdb1 /mnt/newdisk
+echo "/dev/sdb1 /mnt/newdisk ext4 defaults 0 0" | sudo tee -a /etc/fstab
+EOT
 }
 
 variable "nested_virtualization" {
