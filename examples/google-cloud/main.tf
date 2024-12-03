@@ -14,6 +14,7 @@ module "harvester_first_node" {
   project_id            = var.project_id
   region                = var.region
   instance_count        = 1
+  instance_type         = var.instance_type
   startup_script        = var.startup_script
   nested_virtualization = var.nested_virtualization
 }
@@ -31,6 +32,7 @@ module "harvester_additional_nodes" {
   subnet                = local.subnet
   create_firewall       = local.create_firewall
   instance_count        = var.instance_count - 1
+  instance_type         = var.instance_type
   startup_script        = var.startup_script
   nested_virtualization = var.nested_virtualization
 }
