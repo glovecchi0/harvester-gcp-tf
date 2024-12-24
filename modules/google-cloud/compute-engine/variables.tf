@@ -130,7 +130,7 @@ variable "disk_type" {
 variable "instance_type" {
   description = "The name of a Google Compute Engine machine type"
   type        = string
-  default     = "n2-standard-2"
+  default     = "n2-standard-16"
 }
 
 variable "os_image" {

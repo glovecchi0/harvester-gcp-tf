@@ -95,8 +95,11 @@ resource "google_compute_instance" "default" {
     }
   }
 
-  scratch_disk {
-    interface = "SCSI"
+  dynamic "scratch_disk" {
+    for_each = toset([0, 1]) # To have 2 local SSD disks, necessary in case of VM size larger than n2-standard-8
+    content {
+      interface = "SCSI"
+    }
   }
 
   network_interface {

@@ -19,6 +19,7 @@ module "harvester_first_node" {
   nested_virtualization = var.nested_virtualization
 }
 
+/*
 module "harvester_additional_nodes" {
   source                = "../../modules/google-cloud/compute-engine"
   prefix                = var.prefix
@@ -36,3 +37,4 @@ module "harvester_additional_nodes" {
   startup_script        = var.startup_script
   nested_virtualization = var.nested_virtualization
 }
+*/
