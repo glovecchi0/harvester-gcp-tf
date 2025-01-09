@@ -64,7 +64,7 @@ variable "region" {
 variable "create_ssh_key_pair" {
   description = "Specify if a new SSH key pair needs to be created for the instances"
   type        = bool
-  default     = null
+  default     = true
 }
 
 variable "ssh_private_key_path" {
@@ -88,7 +88,7 @@ variable "ip_cidr_range" {
 variable "create_vpc" {
   description = "Specify whether VPC / Subnet should be created for the instances"
   type        = bool
-  default     = null
+  default     = true
 }
 
 variable "vpc" {
@@ -106,7 +106,7 @@ variable "subnet" {
 variable "create_firewall" {
   description = "Google Firewall used for all resources"
   type        = bool
-  default     = null
+  default     = true
 }
 
 variable "instance_count" {
@@ -138,16 +138,15 @@ variable "instance_type" {
   default     = "n2-standard-16"
 }
 
-variable "os_image" {
-  description = "Ubuntu 22.04 LTS - x86/64, amd64 jammy image built on 2023-09-08"
-  type        = string
-  default     = "projects/ubuntu-os-cloud/global/images/ubuntu-2204-jammy-v20230908"
-}
-
-variable "ssh_username" {
-  description = "Username used for SSH login"
+variable "os_type" {
+  description = "Operating system type (sles or ubuntu)"
   type        = string
   default     = "ubuntu"
+
+  validation {
+    condition     = contains(["sles", "ubuntu"], var.os_type)
+    error_message = "The operating system type must be 'sles' or 'ubuntu'."
+  }
 }
 
 variable "startup_script" {
@@ -159,7 +158,7 @@ systemctl start serial-getty@ttyS1.service
 systemctl enable serial-getty@ttyS1.service
 # Installation of pre-requisite packages
 apt update && sudo apt upgrade -y
-apt install -y curl wget nfs-common qemu-kvm libvirt-clients libvirt-daemon-system cpu-checker virtinst
+apt install -y curl wget nfs-common qemu-kvm libvirt-clients libvirt-daemon-system cpu-checker virtinst novnc websockify
 # Harvester's ISO download
 wget https://releases.rancher.com/harvester/v1.3.1/harvester-v1.3.1-amd64.iso -O /var/lib/libvirt/images/harvester.iso
 # Data disk partition

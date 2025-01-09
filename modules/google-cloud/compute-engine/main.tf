@@ -1,6 +1,9 @@
 locals {
   private_ssh_key_path = var.ssh_private_key_path == null ? "${path.cwd}/${var.prefix}-ssh_private_key.pem" : var.ssh_private_key_path
   public_ssh_key_path  = var.ssh_public_key_path == null ? "${path.cwd}/${var.prefix}-ssh_public_key.pem" : var.ssh_public_key_path
+  os_image_family      = var.os_type == "sles" ? "sles-15" : "ubuntu-2204-lts"
+  os_image_project     = var.os_type == "sles" ? "suse-cloud" : "ubuntu-os-cloud"
+  ssh_username         = var.os_type
 }
 
 resource "tls_private_key" "ssh_private_key" {
@@ -20,6 +23,11 @@ resource "local_file" "public_key_pem" {
   filename        = local.public_ssh_key_path
   content         = tls_private_key.ssh_private_key[0].public_key_openssh
   file_permission = "0600"
+}
+
+data "google_compute_image" "os_image" {
+  family  = local.os_image_family
+  project = local.os_image_project
 }
 
 resource "google_compute_network" "vpc" {
@@ -50,7 +58,7 @@ resource "google_compute_firewall" "default" {
   #https://docs.harvesterhci.io/v1.3/install/requirements#port-requirements-for-harvester-nodes
   allow {
     protocol = "tcp"
-    ports    = ["2379", "2381", "2380", "10010", "6443", "9345", "10252", "10257", "10251", "10259", "10250", "10256", "10258", "9091", "9099", "2112", "6444", "10246-10249", "8181", "8444", "10245", "80", "9796", "30000-32767", "22", "3260"]
+    ports    = ["2379", "2381", "2380", "10010", "6443", "9345", "10252", "10257", "10251", "10259", "10250", "10256", "10258", "9091", "9099", "2112", "6444", "10246-10249", "8181", "8444", "10245", "80", "9796", "30000-32767", "22", "3260", "5900", "6080"]
   }
   #https://docs.harvesterhci.io/v1.3/install/requirements#port-requirements-for-harvester-nodes
   allow {
@@ -91,7 +99,7 @@ resource "google_compute_instance" "default" {
     initialize_params {
       size  = var.instance_disk_size
       type  = var.disk_type
-      image = var.os_image
+      image = data.google_compute_image.os_image.self_link
     }
   }
 
@@ -111,7 +119,7 @@ resource "google_compute_instance" "default" {
   metadata = {
     serial-port-logging-enable = "TRUE"
     serial-port-enable         = "TRUE"
-    ssh-keys                   = var.create_ssh_key_pair ? "${var.ssh_username}:${tls_private_key.ssh_private_key[0].public_key_openssh}" : "${var.ssh_username}:${local.public_ssh_key_path}"
+    ssh-keys                   = var.create_ssh_key_pair ? "${local.ssh_username}:${tls_private_key.ssh_private_key[0].public_key_openssh}" : "${local.ssh_username}:${local.public_ssh_key_path}"
     startup-script             = var.startup_script
   }
 

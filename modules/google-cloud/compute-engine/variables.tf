@@ -133,16 +133,15 @@ variable "instance_type" {
   default     = "n2-standard-16"
 }
 
-variable "os_image" {
-  description = "Ubuntu 22.04 LTS - x86/64, amd64 jammy image built on 2023-09-08"
-  type        = string
-  default     = "projects/ubuntu-os-cloud/global/images/ubuntu-2204-jammy-v20230908"
-}
-
-variable "ssh_username" {
-  description = "Username used for SSH login"
+variable "os_type" {
+  description = "Operating system type (sles or ubuntu)"
   type        = string
   default     = "ubuntu"
+
+  validation {
+    condition     = contains(["sles", "ubuntu"], var.os_type)
+    error_message = "The operating system type must be 'sles' or 'ubuntu'."
+  }
 }
 
 variable "startup_script" {

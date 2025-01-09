@@ -21,7 +21,7 @@ ssh_public_key_path = null
 ip_cidr_range = "10.10.0.0/24"
 
 ## -- Specify whether VPC / Subnet should be created for the instances
-create_vpc = null
+create_vpc = true
 
 ## -- Google VPC used for all resources
 vpc = null
@@ -30,7 +30,7 @@ vpc = null
 subnet = null
 
 ## -- Specify whether a firewall should be created for the resources
-create_firewall = null
+create_firewall = true
 
 ## -- The number of nodes to create
 instance_count = 3
@@ -42,13 +42,10 @@ instance_disk_size = 50
 disk_type = "pd-balanced"
 
 ## -- The name of a Google Compute Engine machine type
-instance_type = "n2-standard-2"
+instance_type = "n2-standard-16"
 
-## -- The image used as the VM Operating System
-os_image = "projects/ubuntu-os-cloud/global/images/ubuntu-2204-jammy-v20230908"
-
-## -- Username used for SSH login
-ssh_username = "ubuntu"
+## -- Operating system type (sles or ubuntu)
+os_type = "ubuntu"
 
 ## -- Custom startup script to run when the VMs start
 startup_script = null
