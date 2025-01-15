@@ -1,9 +1,9 @@
 locals {
   private_ssh_key_path = var.ssh_private_key_path == null ? "${path.cwd}/${var.prefix}-ssh_private_key.pem" : var.ssh_private_key_path
   public_ssh_key_path  = var.ssh_public_key_path == null ? "${path.cwd}/${var.prefix}-ssh_public_key.pem" : var.ssh_public_key_path
-  os_image_family      = var.os_type == "sles" ? "sles-15" : "ubuntu-2204-lts"
-  os_image_project     = var.os_type == "sles" ? "suse-cloud" : "ubuntu-os-cloud"
-  ssh_username         = var.os_type
+  os_image_family      = var.instance_os_type == "sles" ? "sles-15" : "ubuntu-2204-lts"
+  os_image_project     = var.instance_os_type == "sles" ? "suse-cloud" : "ubuntu-os-cloud"
+  ssh_username         = var.instance_os_type
 }
 
 resource "tls_private_key" "ssh_private_key" {
@@ -60,7 +60,7 @@ resource "google_compute_firewall" "default" {
     protocol = "tcp"
     ports    = ["2379", "2381", "2380", "10010", "6443", "9345", "10252", "10257", "10251", "10259", "10250", "10256", "10258", "9091", "9099", "2112", "6444", "10246-10249", "8181", "8444", "10245", "80", "9796", "30000-32767", "22", "3260", "5900", "6080"]
   }
-  #https://docs.harvesterhci.io/v1.3/install/requirements#port-requirements-for-harvester-nodes
+
   allow {
     protocol = "udp"
     ports    = ["8472", "68"]
@@ -87,6 +87,14 @@ resource "random_string" "random" {
   upper   = false
 }
 
+resource "google_compute_disk" "data_disk" {
+  count = var.create_data_disk ? var.instance_count : 0
+  name  = "${var.prefix}-data-disk-${count.index + 1}"
+  type  = var.data_disk_type
+  size  = var.data_disk_size
+  zone  = data.google_compute_zones.available.names[count.index % 3]
+}
+
 resource "google_compute_instance" "default" {
   count        = var.instance_count
   name         = "${var.prefix}-vm-${count.index + 1}-${random_string.random.result}"
@@ -97,8 +105,8 @@ resource "google_compute_instance" "default" {
 
   boot_disk {
     initialize_params {
-      size  = var.instance_disk_size
-      type  = var.disk_type
+      type  = var.os_disk_type
+      size  = var.os_disk_size
       image = data.google_compute_image.os_image.self_link
     }
   }
@@ -107,6 +115,13 @@ resource "google_compute_instance" "default" {
     for_each = toset([0, 1]) # To have 2 local SSD disks, necessary in case of VM size larger than n2-standard-8
     content {
       interface = "SCSI"
+    }
+  }
+
+  dynamic "attached_disk" {
+    for_each = var.create_data_disk ? [google_compute_disk.data_disk[count.index].self_link] : []
+    content {
+      source = attached_disk.value
     }
   }
 
@@ -121,6 +136,13 @@ resource "google_compute_instance" "default" {
     serial-port-enable         = "TRUE"
     ssh-keys                   = var.create_ssh_key_pair ? "${local.ssh_username}:${tls_private_key.ssh_private_key[0].public_key_openssh}" : "${local.ssh_username}:${local.public_ssh_key_path}"
     startup-script             = var.startup_script
+  }
+
+  lifecycle {
+    create_before_destroy = true
+    ignore_changes = [
+      boot_disk[0].initialize_params[0].image
+    ]
   }
 
   advanced_machine_features {
