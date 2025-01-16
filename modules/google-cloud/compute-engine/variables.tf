@@ -157,9 +157,9 @@ variable "data_disk_type" {
 }
 
 variable "data_disk_size" {
-  description = "Specifies the size of the additional data disk for each VM instance, in GB. Default is '250'."
+  description = "Specifies the size of the additional data disk for each VM instance, in GB. Default is '300'."
   type        = number
-  default     = 250
+  default     = 300
 }
 
 variable "startup_script" {
