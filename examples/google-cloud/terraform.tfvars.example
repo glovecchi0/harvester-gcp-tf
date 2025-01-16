@@ -44,7 +44,7 @@ os_disk_size = 50
 instance_type = "n2-standard-16"
 
 ## -- Specifies the operating system type ('sles' or 'ubuntu').
-instance_os_type = "ubuntu"
+instance_os_type = "sles"
 
 ## -- Specifies whether to create an additional data disk for each VM instance.
 create_data_disk = true
@@ -53,7 +53,7 @@ create_data_disk = true
 data_disk_type = pd-balanced
 
 ## -- Specifies the size of the additional data disk for each VM instance, in GB.
-data_disk_size = 300
+data_disk_size = 350
 
 ## -- Specifies a custom startup script to run when the VMs start.
 startup_script = null

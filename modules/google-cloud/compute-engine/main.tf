@@ -26,9 +26,9 @@ resource "local_file" "public_key_pem" {
 }
 
 data "google_compute_image" "os_image" {
-  #family  = local.os_image_family
+  family  = local.os_image_family
   project = local.os_image_project
-  filter  = "name = \"ubuntu-2204-jammy-v20230908\""
+  #filter  = "name = \"ubuntu-2204-jammy-v20230908\""
 }
 
 resource "google_compute_network" "vpc" {

@@ -134,9 +134,9 @@ variable "instance_type" {
 }
 
 variable "instance_os_type" {
-  description = "Specifies the operating system type ('sles' or 'ubuntu'). Default is 'ubuntu'."
+  description = "Specifies the operating system type ('sles' or 'ubuntu'). Default is 'sles'."
   type        = string
-  default     = "ubuntu"
+  default     = "sles"
 
   validation {
     condition     = contains(["sles", "ubuntu"], var.instance_os_type)
@@ -157,9 +157,9 @@ variable "data_disk_type" {
 }
 
 variable "data_disk_size" {
-  description = "Specifies the size of the additional data disk for each VM instance, in GB. Default is '300'."
+  description = "Specifies the size of the additional data disk for each VM instance, in GB. Default is '350'."
   type        = number
-  default     = 300
+  default     = 350
 }
 
 variable "startup_script" {
