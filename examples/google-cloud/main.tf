@@ -40,6 +40,21 @@ data "local_file" "ssh_private_key" {
   filename   = local.ssh_private_key_path
 }
 
+resource "null_resource" "harvester_iso_download_checking" {
+  depends_on = [data.local_file.ssh_private_key]
+  provisioner "remote-exec" {
+    inline = [
+      "while true; do [ -f '/tmp/harvester_download_done' ] && break || echo 'The download of the Harvester ISO is not yet complete. Checking again in 30 seconds...' && sleep 30; done"
+    ]
+    connection {
+      type        = "ssh"
+      host        = module.harvester_first_node.instances_public_ip[0]
+      user        = local.ssh_username
+      private_key = data.local_file.ssh_private_key.content
+    }
+  }
+}
+
 resource "null_resource" "disk_partitioning" {
   depends_on = [data.local_file.ssh_private_key]
   provisioner "remote-exec" {
