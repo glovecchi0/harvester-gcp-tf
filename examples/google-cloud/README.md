@@ -28,3 +28,10 @@ tofu init -upgrade && tofu apply -auto-approve
 ```bash
 tofu destroy -auto-approve
 ```
+
+## How to access Google VMs
+
+#### Run the following command (if user is `ubuntu`)
+```bash
+ssh -oStrictHostKeyChecking=no -i <PREFIX>-ssh_private_key.pem ubuntu@<PUBLIC_IPV4>
+```
