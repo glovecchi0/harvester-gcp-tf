@@ -103,6 +103,7 @@ socat TCP-LISTEN:443,fork TCP:<NESTED_VM_IPV4>:443
 
 #### Google VM deployment
 
+![](../../images/1-tfvars.png)
 
 ![](../../images/2-tfapply-1.png)
 
