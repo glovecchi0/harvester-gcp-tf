@@ -109,13 +109,9 @@ variable "create_firewall" {
 }
 
 variable "instance_count" {
-  description = "Specifies the number of nodes to create (>= 1 && <=3). Default is '1'."
+  description = "Specifies the number of nodes to create. Default is '1'."
   type        = number
   default     = 1
-  validation {
-    condition     = contains([1, 2, 3], var.instance_count)
-    error_message = "The number of instances must be 1, 2, or 3."
-  }
 }
 
 variable "os_disk_type" {
