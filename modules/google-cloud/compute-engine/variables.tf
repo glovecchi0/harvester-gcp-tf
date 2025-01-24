@@ -14,7 +14,6 @@ variable "region" {
   description = "Specifies the Google region used for all resources. Default is 'us-west2'."
   type        = string
   default     = "us-west2"
-
   validation {
     condition = contains([
       "asia-east1",
@@ -148,6 +147,12 @@ variable "create_data_disk" {
   description = "Specifies whether to create an additional data disk for each VM instance. Default is 'true'."
   type        = bool
   default     = true
+}
+
+variable "data_disk_count" {
+  description = "Specifies the number of data disks to create. Default is '1'."
+  type        = number
+  default     = 1
 }
 
 variable "data_disk_type" {

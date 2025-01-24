@@ -49,6 +49,9 @@ instance_os_type = "sles"
 ## -- Specifies whether to create an additional data disk for each VM instance.
 create_data_disk = true
 
+## -- Specifies the number of data disks to create.
+data_disk_count = 1
+
 ## -- Specifies the type of the disk attached to each node (e.g., 'pd-standard', 'pd-ssd', or 'pd-balanced').
 data_disk_type = pd-balanced
 
