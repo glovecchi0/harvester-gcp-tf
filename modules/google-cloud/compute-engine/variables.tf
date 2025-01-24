@@ -56,7 +56,7 @@ variable "region" {
       "us-west3",
       "us-west4"
     ], var.region)
-    error_message = "Invalid Region specified!"
+    error_message = "Invalid Region specified."
   }
 }
 
@@ -109,9 +109,13 @@ variable "create_firewall" {
 }
 
 variable "instance_count" {
-  description = "Specifies the number of nodes to create. Default is '3'."
+  description = "Specifies the number of nodes to create (>= 1 && <=3). Default is '1'."
   type        = number
-  default     = 3
+  default     = 1
+  validation {
+    condition     = contains([1, 2, 3], var.instance_count)
+    error_message = "The number of instances must be 1, 2, or 3."
+  }
 }
 
 variable "os_disk_type" {
@@ -136,7 +140,6 @@ variable "instance_os_type" {
   description = "Specifies the operating system type ('sles' or 'ubuntu'). Default is 'sles'."
   type        = string
   default     = "sles"
-
   validation {
     condition     = contains(["sles", "ubuntu"], var.instance_os_type)
     error_message = "The operating system type must be 'sles' or 'ubuntu'."
@@ -150,9 +153,13 @@ variable "create_data_disk" {
 }
 
 variable "data_disk_count" {
-  description = "Specifies the number of data disks to create. Default is '1'."
+  description = "Specifies the number of data disks to create (>= 1 && <=3). Default is '1'."
   type        = number
   default     = 1
+  validation {
+    condition     = contains([1, 2, 3], var.data_disk_count)
+    error_message = "The number of data disks must be 1, 2, or 3."
+  }
 }
 
 variable "data_disk_type" {
