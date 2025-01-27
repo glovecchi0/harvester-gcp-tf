@@ -99,7 +99,7 @@ socat TCP-LISTEN:443,fork TCP:<NESTED_VM_IPV4>:443
 
 #### Connect to the Harvester console via browser --> Chrome > `https://<PUBLIC_IPV4>`
 
-# DEMOSTRATION
+# DEMOSTRATION (single VM)
 
 #### Google VM deployment
 
