@@ -95,7 +95,7 @@ resource "null_resource" "harvester_iso_download_checking" {
 
 resource "null_resource" "disk_partitioning" {
   depends_on = [data.local_file.ssh_private_key]
-  for_each   = local.instances_ip_map
+  for_each = local.instances_ip_map
   provisioner "file" {
     source      = "${path.cwd}/partition_disk.sh"
     destination = "/tmp/partition_disk.sh"
@@ -110,6 +110,24 @@ resource "null_resource" "disk_partitioning" {
     inline = [
       "sudo chmod +x /tmp/partition_disk.sh",
       "sudo bash -c '/tmp/partition_disk.sh ${var.data_disk_count}'"
+    ]
+    connection {
+      type        = "ssh"
+      host        = each.value
+      user        = local.ssh_username
+      private_key = data.local_file.ssh_private_key.content
+    }
+  }
+}
+
+resource "null_resource" "harvester_startup" {
+  depends_on = [null_resource.harvester_iso_download_checking]
+  for_each   = local.instances_ip_map
+  provisioner "remote-exec" {
+    inline = [
+      "sudo virsh net-define /srv/tftpboot/custom-network.xml",
+      "sudo virsh net-start custom-network",
+      "sudo virsh net-autostart custom-network"
     ]
     connection {
       type        = "ssh"
