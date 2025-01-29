@@ -9,8 +9,8 @@ locals {
   instance_count       = var.instance_count - 1
   ssh_username         = var.instance_os_type
   startup_script       = var.instance_os_type == "ubuntu" ? file("${path.cwd}/ubuntu_startup_script.tpl") : file("${path.cwd}/sles_startup_script.tpl")
-  all_instances_ips    = concat([module.harvester_first_node.instances_public_ip[0]], module.harvester_additional_nodes.instances_public_ip)
-  instances_ip_map     = zipmap(range(length(local.all_instances_ips)), local.all_instances_ips)
+  #all_instances_ips    = concat([module.harvester_first_node.instances_public_ip[0]], module.harvester_additional_nodes.instances_public_ip)
+  #instances_ip_map     = zipmap(range(length(local.all_instances_ips)), local.all_instances_ips)
 }
 
 module "harvester_first_node" {
@@ -95,7 +95,7 @@ resource "null_resource" "harvester_iso_download_checking" {
 
 resource "null_resource" "disk_partitioning" {
   depends_on = [data.local_file.ssh_private_key]
-  for_each = local.instances_ip_map
+  for_each   = local.instances_ip_map
   provisioner "file" {
     source      = "${path.cwd}/partition_disk.sh"
     destination = "/tmp/partition_disk.sh"
@@ -120,14 +120,40 @@ resource "null_resource" "disk_partitioning" {
   }
 }
 
-resource "null_resource" "harvester_startup" {
-  depends_on = [null_resource.harvester_iso_download_checking]
+resource "null_resource" "harvester_first_node_startup" {
+  depends_on = [null_resource.harvester_iso_download_checking, null_resource.disk_partitioning]
+  provisioner "remote-exec" {
+    inline = [
+      "sudo sed 's/VERSION/${var.harvester_version}/g' /srv/tftpboot/cloud-config.yaml",
+      "sudo sed 's/TOKEN/${var.harvester_first_node_token}/g' /srv/tftpboot/cloud-config.yaml",
+      "sudo sed 's/PASSWORD/${var.harvester_password}/g' /srv/tftpboot/cloud-config.yaml",
+      "sudo sed 's/HOSTNAME/${var.prefix}-1/g' /srv/tftpboot/cloud-config.yaml",
+      "sudo virsh net-define /srv/tftpboot/vlan1.xml",
+      "sudo virsh net-start vlan1",
+      "sudo virsh net-autostart vlan1"
+    ]
+    connection {
+      type        = "ssh"
+      host        = module.harvester_first_node.instances_public_ip[0]
+      user        = local.ssh_username
+      private_key = data.local_file.ssh_private_key.content
+    }
+  }
+}
+
+/*
+resource "null_resource" "harvester_additional_nodes_startup" {
+  depends_on = [null_resource.harvester_iso_download_checking, null_resource.disk_partitioning]
   for_each   = local.instances_ip_map
   provisioner "remote-exec" {
     inline = [
-      "sudo virsh net-define /srv/tftpboot/custom-network.xml",
-      "sudo virsh net-start custom-network",
-      "sudo virsh net-autostart custom-network"
+      "sudo sed 's/VERSION/${var.harvester_version}/g' /srv/tftpboot/cloud-config.yaml",
+      "sudo sed 's/TOKEN/${var.harvester_first_node_token}/g' /srv/tftpboot/cloud-config.yaml",
+      "sudo sed 's/PASSWORD/${var.harvester_password}/g' /srv/tftpboot/cloud-config.yaml",
+      "sudo sed 's/HOSTNAME/${var.prefix}/g' /srv/tftpboot/cloud-config.yaml",
+      "sudo virsh net-define /srv/tftpboot/vlan1.xml",
+      "sudo virsh net-start vlan1",
+      "sudo virsh net-autostart vlan1"
     ]
     connection {
       type        = "ssh"
@@ -137,3 +163,4 @@ resource "null_resource" "harvester_startup" {
     }
   }
 }
+*/

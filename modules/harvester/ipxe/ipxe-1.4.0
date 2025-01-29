@@ -9,7 +9,7 @@ kernel ${base}/harvester-${version}-vmlinuz-amd64 \
     rd.cos.disable \
     rd.noverifyssl \
     root=live:${base}/harvester-${version}-rootfs-amd64.squashfs \
-    harvester.install.config_url=${base}/cloud-config.yaml \
+    harvester.install.config_url=${base}/cloud_config.yaml \
     harvester.install.management_interface.interfaces=ens3 \
     harvester.install.automatic=true
 initrd ${base}/harvester-${version}-initrd-amd64
