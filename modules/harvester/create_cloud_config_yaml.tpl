@@ -1,9 +1,9 @@
 #cloud-config
 scheme_version: 1
-token: TOKEN
+token: ${token}
 os:
-  hostname: HOSTNAME
-  password: PASSWORD
+  hostname: ${hostname}
+  password: ${password}
   ntp_servers:
   - 0.suse.pool.ntp.org
   - 1.suse.pool.ntp.org
@@ -18,7 +18,7 @@ install:
       mode: active-backup
       miimon: 100
   device: /dev/vda
-  iso_url: tftp://192.168.122.1/harvester-VERSION-amd64.iso
+  iso_url: tftp://192.168.122.1/harvester-${version}-amd64.iso
   tty: ttyS1,115200n8
   vip: 192.168.122.120
   vip_mode: static

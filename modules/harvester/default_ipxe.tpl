@@ -1,5 +1,4 @@
 #!ipxe
-set version VERSION
 set base tftp://192.168.122.1
 dhcp
 kernel ${base}/harvester-${version}-vmlinuz-amd64 \
