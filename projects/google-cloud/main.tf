@@ -176,10 +176,29 @@ resource "null_resource" "harvester_iso_download_checking" {
   }
 }
 
-resource "null_resource" "harvester_first_node_startup" {
+resource "null_resource" "copy_files_to_first_node" {
   depends_on = [null_resource.harvester_iso_download_checking]
+  for_each = {
+    "default.ipxe"                 = local.default_ipxe_script_file
+    "create_cloud_config_yaml.tpl" = local.create_cloud_config_file
+  }
+  connection {
+    type        = "ssh"
+    host        = module.harvester_first_node.instances_public_ip[0]
+    user        = local.ssh_username
+    private_key = data.local_file.ssh_private_key.content
+  }
+  provisioner "file" {
+    source      = each.value
+    destination = "/tmp/${basename(each.value)}"
+  }
+}
+
+resource "null_resource" "harvester_first_node_startup" {
+  depends_on = [null_resource.copy_files_to_first_node]
   provisioner "remote-exec" {
     inline = [
+      "sudo mv /tmp/${basename(local.default_ipxe_script_file)} /tmp/${basename(local.create_cloud_config_file)} /srv/tftpboot/",
       "sudo virsh net-define /srv/tftpboot/vlan1.xml",
       "sudo virsh net-start vlan1",
       "sudo virsh net-autostart vlan1"
