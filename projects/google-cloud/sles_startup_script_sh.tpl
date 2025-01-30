@@ -20,16 +20,16 @@ sudo curl -L -o /srv/tftpboot/harvester-${version}-amd64.iso \
 
 # Disk partitioning
 for i in $(seq 1 "${count}"); do
-  if [ -b "${disk_name}$(printf "\x$(printf %x $((96 + i)))")" ]; then
-    echo "Partitioning and mounting disk ${disk_name}$(printf "\x$(printf %x $((96 + i)))") on ${mount_point}${count}..."
-    sudo parted --script "${disk_name}$(printf "\x$(printf %x $((96 + i)))")" mklabel gpt
-    sudo parted --script "${disk_name}$(printf "\x$(printf %x $((96 + i)))")" mkpart primary ext4 0% 100%
-    sudo mkfs.ext4 "${disk_name}$(printf "\x$(printf %x $((96 + i)))")1"
-    sudo mkdir -p "${mount_point}${count}"
-    sudo mount "${disk_name}$(printf "\x$(printf %x $((96 + i)))")1" "${mount_point}${count}"
-    echo "${disk_name}$(printf "\x$(printf %x $((96 + i)))")1 ${mount_point}${count} ext4 defaults 0 0" | sudo tee -a /etc/fstab
+  if [ -b "${disk_name}$(printf "\x$(printf %x $((97 + i)))")" ]; then
+    echo "Partitioning and mounting disk ${disk_name}$(printf "\x$(printf %x $((97 + i)))") on ${mount_point}$i..."
+    sudo parted --script "${disk_name}$(printf "\x$(printf %x $((97 + i)))")" mklabel gpt
+    sudo parted --script "${disk_name}$(printf "\x$(printf %x $((97 + i)))")" mkpart primary ext4 0% 100%
+    sudo mkfs.ext4 "${disk_name}$(printf "\x$(printf %x $((97 + i)))")1"
+    sudo mkdir -p "${mount_point}$i"
+    sudo mount "${disk_name}$(printf "\x$(printf %x $((97 + i)))")1" "${mount_point}$i"
+    echo "${disk_name}$(printf "\x$(printf %x $((97 + i)))")1 ${mount_point}$i ext4 defaults 0 0" | sudo tee -a /etc/fstab
   else
-    echo "Error: disk ${disk_name}$(printf "\x$(printf %x $((96 + i)))") does not exist."
+    echo "Error: disk ${disk_name}$(printf "\x$(printf %x $((97 + i)))") does not exist."
     exit 1
   fi
 done
