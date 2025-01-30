@@ -3,8 +3,11 @@ locals {
   sles_startup_script_file            = "${path.cwd}/sles_startup_script.sh"
   ubuntu_startup_script_template_file = "${path.cwd}/ubuntu_startup_script_sh.tpl"
   ubuntu_startup_script_file          = "${path.cwd}/ubuntu_startup_script.sh"
+  data_disk_name                      = "/dev/sd"
+  data_disk_mount_point               = "/mnt/datadisk"
   default_ipxe_script_template_file   = "../../modules/harvester/default_ipxe.tpl"
   default_ipxe_script_file            = "${path.cwd}/default.ipxe"
+  ipxe_base_url                       = "tftp://192.168.122.1"
   create_cloud_config_template_file   = "../../modules/harvester/create_cloud_config_yaml.tpl"
   create_cloud_config_file            = "${path.cwd}/create_cloud_config.yaml"
   join_cloud_config_template_file     = "../../modules/harvester/join_cloud_config_yaml.tpl"
@@ -18,34 +21,50 @@ locals {
   create_firewall                     = var.create_firewall == true ? false : var.create_firewall
   instance_count                      = var.instance_count - 1
   ssh_username                        = var.instance_os_type
-  startup_script                      = var.instance_os_type == "ubuntu" ? file("${path.cwd}/local.ubuntu_startup_script_file") : file("${path.cwd}/local.sles_startup_script_file")
   all_instances_ips                   = concat([module.harvester_first_node.instances_public_ip[0]], module.harvester_additional_nodes.instances_public_ip)
   instances_ip_map                    = zipmap(range(length(local.all_instances_ips)), local.all_instances_ips)
 }
 
 resource "local_file" "sles_startup_script_config" {
+  count = var.instance_os_type == "sles" ? 1 : 0
   content = templatefile("${local.sles_startup_script_template_file}", {
-    version = var.harvester_version,
-    count   = var.data_disk_count
+    version     = var.harvester_version,
+    count       = var.data_disk_count,
+    disk_name   = local.data_disk_name,
+    mount_point = local.data_disk_mount_point
   })
   file_permission = "0644"
   filename        = local.sles_startup_script_file
 }
 
-/*
+data "local_file" "sles_startup_script" {
+  count      = var.instance_os_type == "sles" ? 1 : 0
+  depends_on = [local_file.sles_startup_script_config]
+  filename   = local.sles_startup_script_file
+}
+
 resource "local_file" "ubuntu_startup_script_config" {
+  count = var.instance_os_type == "ubuntu" ? 1 : 0
   content = templatefile("${local.ubuntu_startup_script_template_file}", {
-    version = var.harvester_version,
-    count   = var.data_disk_count
+    version     = var.harvester_version,
+    count       = var.data_disk_count,
+    disk_name   = local.data_disk_name,
+    mount_point = local.data_disk_mount_point
   })
   file_permission = "0644"
   filename        = local.ubuntu_startup_script_file
 }
-*/
+
+data "local_file" "ubuntu_startup_script" {
+  count      = var.instance_os_type == "ubuntu" ? 1 : 0
+  depends_on = [local_file.ubuntu_startup_script_config]
+  filename   = local.ubuntu_startup_script_file
+}
 
 resource "local_file" "default_ipxe_script_config" {
   content = templatefile("${local.default_ipxe_script_template_file}", {
     version = var.harvester_version
+    base    = local.ipxe_base_url
   })
   file_permission = "0644"
   filename        = local.default_ipxe_script_file
@@ -65,9 +84,9 @@ resource "local_file" "create_cloud_config_yaml" {
 /*
 resource "local_file" "join_cloud_config_yaml" {
   content = templatefile("${local.join_cloud_config_template_file}", {
-    version  = var.harvester_version
-    token    = var.harvester_first_node_token
-    password = var.harvester_password
+    version  = var.harvester_version,
+    token    = var.harvester_first_node_token,
+    password = var.harvester_password,
     hostname = "${var.prefix}-1"
   })
   file_permission = "0644"
@@ -98,7 +117,7 @@ module "harvester_first_node" {
   data_disk_count       = var.data_disk_count
   data_disk_type        = var.data_disk_type
   data_disk_size        = var.data_disk_size
-  startup_script        = local.startup_script
+  startup_script        = var.instance_os_type == "ubuntu" ? data.local_file.ubuntu_startup_script[0].content : data.local_file.sles_startup_script[0].content
   nested_virtualization = var.nested_virtualization
 }
 
@@ -125,7 +144,7 @@ module "harvester_additional_nodes" {
   data_disk_count       = var.data_disk_count
   data_disk_type        = var.data_disk_type
   data_disk_size        = var.data_disk_size
-  startup_script        = local.startup_script
+  startup_script        = var.instance_os_type == "ubuntu" ? data.local_file.ubuntu_startup_script[0].content : data.local_file.sles_startup_script[0].content
   nested_virtualization = var.nested_virtualization
 }
 
