@@ -7,6 +7,8 @@ locals {
   data_disk_mount_point               = "/mnt/datadisk"
   default_ipxe_script_template_file   = "../../modules/harvester/default_ipxe.tpl"
   default_ipxe_script_file            = "${path.cwd}/default.ipxe"
+  join_ipxe_script_template_file      = "../../modules/harvester/join_ipxe.tpl"
+  join_ipxe_script_file               = "${path.cwd}/join.ipxe"
   ipxe_base_url                       = "tftp://192.168.122.1"
   create_cloud_config_template_file   = "../../modules/harvester/create_cloud_config_yaml.tpl"
   create_cloud_config_file            = "${path.cwd}/create_cloud_config.yaml"
@@ -82,7 +84,17 @@ resource "local_file" "create_cloud_config_yaml" {
 }
 
 /*
+resource "local_file" "join_ipxe_script_config" {
+  content = templatefile("${local.join_ipxe_script_template_file}", {
+    version = var.harvester_version
+    base    = local.ipxe_base_url
+  })
+  file_permission = "0644"
+  filename        = local.join_ipxe_script_file
+}
+
 resource "local_file" "join_cloud_config_yaml" {
+  count = var.instance_count > 1 ? 1 : 0
   content = templatefile("${local.join_cloud_config_template_file}", {
     version  = var.harvester_version,
     token    = var.harvester_first_node_token,
