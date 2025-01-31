@@ -18,7 +18,7 @@ install:
       mode: active-backup
       miimon: 100
   device: /dev/vda
-  iso_url: tftp://192.168.122.1/harvester-${version}-amd64.iso
-  tty: ttyS1,115200n8
+  iso_url: http://192.168.122.1/harvester-${version}-amd64.iso
+  tty: tty1,115200n8
   vip: 192.168.122.120
   vip_mode: static

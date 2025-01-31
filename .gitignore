@@ -23,6 +23,8 @@ projects/google-cloud/join_cloud_config.yaml
 
 # Allow
 !modules/harvester/default_ipxe.tpl
+!modules/harvester/join_ipxe.tpl
 !modules/harvester/create_cloud_config_yaml.tpl
 !modules/harvester/join_cloud_config_yaml.tpl
 !modules/harvester/qemu_vlan1_xml.tpl
+!modules/harvester/nginx_config.tpl
