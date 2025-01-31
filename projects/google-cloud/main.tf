@@ -9,7 +9,7 @@ locals {
   default_ipxe_script_file            = "${path.cwd}/default.ipxe"
   join_ipxe_script_template_file      = "../../modules/harvester/join_ipxe.tpl"
   join_ipxe_script_file               = "${path.cwd}/join.ipxe"
-  ipxe_base_url                       = "tftp://192.168.122.1"
+  ipxe_base_url                       = "http://192.168.122.1"
   create_cloud_config_template_file   = "../../modules/harvester/create_cloud_config_yaml.tpl"
   create_cloud_config_file            = "${path.cwd}/create_cloud_config.yaml"
   join_cloud_config_template_file     = "../../modules/harvester/join_cloud_config_yaml.tpl"
