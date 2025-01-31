@@ -185,3 +185,25 @@ variable "nested_virtualization" {
   type        = bool
   default     = true
 }
+
+variable "harvester_version" {
+  description = "Specifies the Harvester version. Default is 'v1.4.0'."
+  type        = string
+  default     = "v1.4.0"
+  validation {
+    condition     = can(regex("^v[0-9]+\\.[0-9]+\\.[0-9]+$", var.harvester_version))
+    error_message = "The Harvester version must start with 'v' followed by a valid version number (e.g., v1.4.0)."
+  }
+}
+
+variable "harvester_first_node_token" {
+  description = "Specifies the token used to join additional nodes to the Harvester cluster (HA setup). Default is 'SecretToken.123'."
+  type        = string
+  default     = "SecretToken.123"
+}
+
+variable "harvester_password" {
+  description = "Specifies the password used to access the Harvester nodes. Default is 'SecretPassword.123'."
+  type        = string
+  default     = "SecretPassword.123"
+}

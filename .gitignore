@@ -11,8 +11,18 @@ terraform.tfvars
 *kube_config.yml*
 *-ssh_private_key.pem*
 *-ssh_public_key.pem*
-*config-yaml*
+projects/google-cloud/sles_startup_script.sh
+projects/google-cloud/ubuntu_startup_script.sh
+projects/google-cloud/default.ipxe
+projects/google-cloud/create_cloud_config.yaml
+projects/google-cloud/join_cloud_config.yaml
 
 # Temporary files
 **/*.swp
 .DS_Store
+
+# Allow
+!modules/harvester/default_ipxe.tpl
+!modules/harvester/create_cloud_config_yaml.tpl
+!modules/harvester/join_cloud_config_yaml.tpl
+!modules/harvester/qemu_vlan1_xml.tpl
