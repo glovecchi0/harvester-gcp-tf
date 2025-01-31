@@ -6,7 +6,7 @@ sudo systemctl enable --now libvirtd
 sudo mkdir -p /srv/www/harvester
 
 # Configuring HTTP server
-cat << EOF > /etc/nginx/nginx.conf
+sudo cat << EOF > /etc/nginx/nginx.conf
 events {
     worker_connections  1024;
     use epoll;
@@ -32,12 +32,12 @@ http {
 }
 EOF
 
-chown nobody:nobody -R /srv/www
-systemctl enable --now nginx
+sudo chown nobody:nobody -R /srv/www
+sudo systemctl enable --now nginx
 
 # Download the files needed to start the nested VM
 sudo curl -L -o /srv/www/harvester/vlan1.xml \
-  https://raw.githubusercontent.com/glovecchi0/harvester-gcp-tf/refs/heads/feature/ftp-automating-startup/modules/harvester/qemu_vlan1_xml.tpl
+  https://raw.githubusercontent.com/glovecchi0/harvester-gcp-tf/refs/heads/feature/nested-VM-config/modules/harvester/qemu_vlan1_xml.tpl
 sudo curl -L -o /srv/www/harvester/harvester-${version}-vmlinuz-amd64 \
   https://github.com/harvester/harvester/releases/download/${version}/harvester-${version}-vmlinuz-amd64
 sudo curl -L -o /srv/www/harvester/harvester-${version}-initrd-amd64 \
