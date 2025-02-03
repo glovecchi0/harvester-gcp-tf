@@ -1,9 +1,11 @@
 locals {
   private_ssh_key_path = var.ssh_private_key_path == null ? "${path.cwd}/${var.prefix}-ssh_private_key.pem" : var.ssh_private_key_path
   public_ssh_key_path  = var.ssh_public_key_path == null ? "${path.cwd}/${var.prefix}-ssh_public_key.pem" : var.ssh_public_key_path
-  os_image_family      = var.instance_os_type == "sles" ? "sles-15" : "ubuntu-2204-lts"
-  os_image_project     = var.instance_os_type == "sles" ? "suse-cloud" : "ubuntu-os-cloud"
-  ssh_username         = var.instance_os_type
+  instance_count       = 1
+  instance_os_type     = "sles"
+  os_image_family      = "sles-15"
+  os_image_project     = "suse-cloud"
+  ssh_username         = local.instance_os_type
 }
 
 resource "tls_private_key" "ssh_private_key" {
@@ -28,7 +30,6 @@ resource "local_file" "public_key_pem" {
 data "google_compute_image" "os_image" {
   family  = local.os_image_family
   project = local.os_image_project
-  #filter  = "name = \"ubuntu-2204-jammy-v20230908\""
 }
 
 resource "google_compute_network" "vpc" {
@@ -96,7 +97,7 @@ resource "google_compute_disk" "data_disk" {
 }
 
 resource "google_compute_instance" "default" {
-  count        = var.instance_count
+  count        = local.instance_count
   name         = "${var.prefix}-vm-${count.index + 1}-${random_string.random.result}"
   machine_type = var.instance_type
   zone         = random_shuffle.random_zone.result[0]

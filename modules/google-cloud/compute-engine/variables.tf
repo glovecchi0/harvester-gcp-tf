@@ -108,12 +108,6 @@ variable "create_firewall" {
   default     = true
 }
 
-variable "instance_count" {
-  description = "Specifies the number of nodes to create. Default is '1'."
-  type        = number
-  default     = 1
-}
-
 variable "os_disk_type" {
   description = "Specifies the type of the disk attached to each node (e.g., 'pd-standard', 'pd-ssd', or 'pd-balanced'). Default is 'pd-balanced'."
   type        = string
@@ -130,16 +124,6 @@ variable "instance_type" {
   description = "Specifies the name of a Google Compute Engine machine type. Default is 'n2-standard-16'."
   type        = string
   default     = "n2-standard-16"
-}
-
-variable "instance_os_type" {
-  description = "Specifies the operating system type ('sles' or 'ubuntu'). Default is 'sles'."
-  type        = string
-  default     = "sles"
-  validation {
-    condition     = contains(["sles", "ubuntu"], var.instance_os_type)
-    error_message = "The operating system type must be 'sles' or 'ubuntu'."
-  }
 }
 
 variable "create_data_disk" {

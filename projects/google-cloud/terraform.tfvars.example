@@ -31,9 +31,6 @@ subnet = null
 ## -- Specifies whether a Google Firewall should be created for all resources.
 create_firewall = true
 
-## -- Specifies the number of nodes to create (>= 1 && <=3).
-instance_count = 1
-
 ## -- Specifies the type of the disk attached to each node (e.g., 'pd-standard', 'pd-ssd', or 'pd-balanced').
 os_disk_type = pd-standard
 
@@ -42,9 +39,6 @@ os_disk_size = 50
 
 ## -- Specifies the name of a Google Compute Engine machine type.
 instance_type = "n2-standard-16"
-
-## -- Specifies the operating system type ('sles' or 'ubuntu').
-instance_os_type = "sles"
 
 ## -- Specifies whether to create an additional data disk for each VM instance.
 create_data_disk = true
