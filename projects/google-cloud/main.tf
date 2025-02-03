@@ -9,7 +9,7 @@ locals {
   default_ipxe_script_file            = "${path.cwd}/default.ipxe"
   join_ipxe_script_template_file      = "../../modules/harvester/join_ipxe.tpl"
   join_ipxe_script_file               = "${path.cwd}/join.ipxe"
-  ipxe_base_url                       = "tftp://192.168.122.1"
+  ipxe_base_url                       = "http://192.168.122.1"
   create_cloud_config_template_file   = "../../modules/harvester/create_cloud_config_yaml.tpl"
   create_cloud_config_file            = "${path.cwd}/create_cloud_config.yaml"
   join_cloud_config_template_file     = "../../modules/harvester/join_cloud_config_yaml.tpl"
@@ -210,8 +210,8 @@ resource "null_resource" "harvester_first_node_startup" {
   depends_on = [null_resource.copy_files_to_first_node]
   provisioner "remote-exec" {
     inline = [
-      "sudo mv /tmp/${basename(local.default_ipxe_script_file)} /tmp/${basename(local.create_cloud_config_file)} /srv/tftpboot/",
-      "sudo virsh net-define /srv/tftpboot/vlan1.xml",
+      "sudo mv /tmp/${basename(local.default_ipxe_script_file)} /tmp/${basename(local.create_cloud_config_file)} /srv/www/harvester/",
+      "sudo virsh net-define /srv/www/harvester/vlan1.xml",
       "sudo virsh net-start vlan1",
       "sudo virsh net-autostart vlan1"
     ]

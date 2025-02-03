@@ -1,22 +1,28 @@
 #!/bin/bash
 
 # Installation of pre-requisite packages
-sudo zypper --non-interactive install parted util-linux virt-install libvirt qemu-kvm python3-websockify novnc socat
+sudo zypper --non-interactive install parted util-linux virt-install libvirt qemu-kvm python3-websockify novnc socat nginx
 sudo systemctl enable --now libvirtd
-sudo mkdir -p /srv/tftpboot/
+sudo mkdir -p /srv/www/harvester
 
 # Download the files needed to start the nested VM
-sudo curl -L -o /srv/tftpboot/vlan1.xml \
-  https://raw.githubusercontent.com/glovecchi0/harvester-gcp-tf/refs/heads/feature/ftp-automating-startup/modules/harvester/qemu_vlan1_xml.tpl
-sudo curl -L -o /srv/tftpboot/harvester-${version}-vmlinuz-amd64 \
+sudo curl -L -o /etc/nginx/nginx.conf \
+  https://raw.githubusercontent.com/glovecchi0/harvester-gcp-tf/refs/heads/main/modules/harvester/harvester/nginx_conf.tpl
+sudo curl -L -o /srv/www/harvester/vlan1.xml \
+  https://raw.githubusercontent.com/glovecchi0/harvester-gcp-tf/refs/heads/main/modules/harvester/qemu_vlan1_xml.tpl
+sudo curl -L -o /srv/www/harvester/harvester-${version}-vmlinuz-amd64 \
   https://github.com/harvester/harvester/releases/download/${version}/harvester-${version}-vmlinuz-amd64
-sudo curl -L -o /srv/tftpboot/harvester-${version}-initrd-amd64 \
+sudo curl -L -o /srv/www/harvester/harvester-${version}-initrd-amd64 \
   https://github.com/harvester/harvester/releases/download/${version}/harvester-${version}-initrd-amd64
-sudo curl -L -o /srv/tftpboot/harvester-${version}-rootfs-amd64.squashfs \
+sudo curl -L -o /srv/www/harvester/harvester-${version}-rootfs-amd64.squashfs \
   https://releases.rancher.com/harvester/${version}/harvester-${version}-rootfs-amd64.squashfs
-sudo curl -L -o /srv/tftpboot/harvester-${version}-amd64.iso \
+sudo curl -L -o /srv/www/harvester/harvester-${version}-amd64.iso \
   https://releases.rancher.com/harvester/${version}/harvester-${version}-amd64.iso && \
   touch /tmp/harvester_download_done
+
+# HTTP server configuration
+sudo chown nobody:nobody -R /srv/www
+sudo systemctl enable --now nginx
 
 # Disk partitioning
 for i in $(seq 1 "${count}"); do
