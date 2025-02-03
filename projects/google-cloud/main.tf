@@ -1,25 +1,25 @@
 locals {
-  sles_startup_script_template_file = "../../modules/harvester/sles_startup_script_sh.tpl"
-  sles_startup_script_file          = "${path.cwd}/sles_startup_script.sh"
-  data_disk_name                    = "/dev/sd"
-  data_disk_mount_point             = "/mnt/datadisk"
-  default_ipxe_script_template_file = "../../modules/harvester/default_ipxe.tpl"
-  default_ipxe_script_file          = "${path.cwd}/default.ipxe"
-  ipxe_base_url                     = "http://192.168.122.1"
-  create_cloud_config_template_file = "../../modules/harvester/create_cloud_config_yaml.tpl"
-  create_cloud_config_file          = "${path.cwd}/create_cloud_config.yaml"
-  join_cloud_config_template_file   = "../../modules/harvester/join_cloud_config_yaml.tpl"
-  join_cloud_config_file            = "${path.cwd}/join_cloud_config.yaml"
+  sles_startup_script_template_file      = "../../modules/harvester/sles_startup_script_sh.tpl"
+  sles_startup_script_file               = "${path.cwd}/sles_startup_script.sh"
+  data_disk_name                         = "/dev/sd"
+  data_disk_mount_point                  = "/mnt/datadisk"
+  default_ipxe_script_template_file      = "../../modules/harvester/default_ipxe.tpl"
+  default_ipxe_script_file               = "${path.cwd}/default.ipxe"
+  ipxe_base_url                          = "http://192.168.122.1"
+  create_cloud_config_template_file      = "../../modules/harvester/create_cloud_config_yaml.tpl"
+  create_cloud_config_file               = "${path.cwd}/create_cloud_config.yaml"
+  join_cloud_config_template_file        = "../../modules/harvester/join_cloud_config_yaml.tpl"
+  join_cloud_config_file                 = "${path.cwd}/join_cloud_config.yaml"
   harvester_startup_script_template_file = "../../modules/harvester/harvester_startup_script_sh.tpl"
-  harvester_startup_script_file     = "${path.cwd}/harvester_startup_script.sh"
-  create_ssh_key_pair               = var.create_ssh_key_pair == true ? false : true
-  ssh_private_key_path              = var.ssh_private_key_path == null ? "${path.cwd}/${var.prefix}-ssh_private_key.pem" : var.ssh_private_key_path
-  ssh_public_key_path               = var.ssh_public_key_path == null ? "${path.cwd}/${var.prefix}-ssh_public_key.pem" : var.ssh_public_key_path
-  create_vpc                        = var.create_vpc == true ? false : var.create_vpc
-  vpc                               = var.vpc == null ? module.harvester_node.vpc[0].name : var.vpc
-  subnet                            = var.subnet == null ? module.harvester_node.subnet[0].name : var.subnet
-  create_firewall                   = var.create_firewall == true ? false : var.create_firewall
-  ssh_username                      = "sles"
+  harvester_startup_script_file          = "${path.cwd}/harvester_startup_script.sh"
+  create_ssh_key_pair                    = var.create_ssh_key_pair == true ? false : true
+  ssh_private_key_path                   = var.ssh_private_key_path == null ? "${path.cwd}/${var.prefix}-ssh_private_key.pem" : var.ssh_private_key_path
+  ssh_public_key_path                    = var.ssh_public_key_path == null ? "${path.cwd}/${var.prefix}-ssh_public_key.pem" : var.ssh_public_key_path
+  create_vpc                             = var.create_vpc == true ? false : var.create_vpc
+  vpc                                    = var.vpc == null ? module.harvester_node.vpc[0].name : var.vpc
+  subnet                                 = var.subnet == null ? module.harvester_node.subnet[0].name : var.subnet
+  create_firewall                        = var.create_firewall == true ? false : var.create_firewall
+  ssh_username                           = "sles"
 }
 
 resource "local_file" "sles_startup_script_config" {
@@ -72,9 +72,9 @@ resource "local_file" "join_cloud_config_yaml" {
 
 resource "local_file" "harvester_startup_script" {
   content = templatefile("${local.harvester_startup_script_template_file}", {
-    hostname = var.prefix
-    public_ip    = module.harvester_node.instances_public_ip,
-    count = var.data_disk_count
+    hostname  = var.prefix
+    public_ip = module.harvester_node.instances_public_ip,
+    count     = var.data_disk_count
   })
   file_permission = "0644"
   filename        = local.harvester_startup_script_file
@@ -129,9 +129,9 @@ resource "null_resource" "harvester_iso_download_checking" {
 resource "null_resource" "copy_files_to_first_node" {
   depends_on = [null_resource.harvester_iso_download_checking]
   for_each = {
-    "default.ipxe"                 = local.default_ipxe_script_file
-    "create_cloud_config_yaml.tpl" = local.create_cloud_config_file
-    "join_cloud_config_yaml.tpl"   = local.join_cloud_config_file
+    "default.ipxe"                    = local.default_ipxe_script_file
+    "create_cloud_config_yaml.tpl"    = local.create_cloud_config_file
+    "join_cloud_config_yaml.tpl"      = local.join_cloud_config_file
     "harvester_startup_script_sh.tpl" = local.harvester_startup_script_file
   }
   connection {
@@ -151,11 +151,8 @@ resource "null_resource" "harvester_node_startup" {
   provisioner "remote-exec" {
     inline = [
       "sudo mv /tmp/${basename(local.default_ipxe_script_file)} /tmp/${basename(local.create_cloud_config_file)} /tmp/${basename(local.join_cloud_config_file)} /tmp/${basename(local.harvester_startup_script_file)} /srv/www/harvester/",
-      "sudo virsh net-define /srv/www/harvester/vlan1.xml",
-      "sudo virsh net-start vlan1",
-      "sudo virsh net-autostart vlan1",
-      "bash /srv/www/harvester/${basename(local.harvester_startup_script_file)}",
-      "echo 'Waiting until Harvester API is ready'"]
+      "bash /srv/www/harvester/${basename(local.harvester_startup_script_file)}"
+    ]
     connection {
       type        = "ssh"
       host        = module.harvester_node.instances_public_ip[0]
