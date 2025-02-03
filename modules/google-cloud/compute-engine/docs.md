@@ -43,8 +43,6 @@ No modules.
 | <a name="input_data_disk_count"></a> [data\_disk\_count](#input\_data\_disk\_count) | Specifies the number of data disks to create (>= 1 && <=3). Default is '1'. | `number` | `1` | no |
 | <a name="input_data_disk_size"></a> [data\_disk\_size](#input\_data\_disk\_size) | Specifies the size of the additional data disk for each VM instance, in GB. Default is '350'. | `number` | `350` | no |
 | <a name="input_data_disk_type"></a> [data\_disk\_type](#input\_data\_disk\_type) | Specifies the type of the disk attached to each node (e.g., 'pd-standard', 'pd-ssd', or 'pd-balanced'). Default is 'pd-balanced'. | `string` | `"pd-balanced"` | no |
-| <a name="input_instance_count"></a> [instance\_count](#input\_instance\_count) | Specifies the number of nodes to create. Default is '1'. | `number` | `1` | no |
-| <a name="input_instance_os_type"></a> [instance\_os\_type](#input\_instance\_os\_type) | Specifies the operating system type ('sles' or 'ubuntu'). Default is 'sles'. | `string` | `"sles"` | no |
 | <a name="input_instance_type"></a> [instance\_type](#input\_instance\_type) | Specifies the name of a Google Compute Engine machine type. Default is 'n2-standard-16'. | `string` | `"n2-standard-16"` | no |
 | <a name="input_ip_cidr_range"></a> [ip\_cidr\_range](#input\_ip\_cidr\_range) | Specifies the range of private IPs available for the Google Subnet. Default is '10.10.0.0/24'. | `string` | `"10.10.0.0/24"` | no |
 | <a name="input_nested_virtualization"></a> [nested\_virtualization](#input\_nested\_virtualization) | Specifies whether nested virtualization should be enabled on the instance. Default is 'true'. | `bool` | `true` | no |

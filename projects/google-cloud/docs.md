@@ -19,8 +19,7 @@
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_harvester_additional_nodes"></a> [harvester\_additional\_nodes](#module\_harvester\_additional\_nodes) | ../../modules/google-cloud/compute-engine | n/a |
-| <a name="module_harvester_first_node"></a> [harvester\_first\_node](#module\_harvester\_first\_node) | ../../modules/google-cloud/compute-engine | n/a |
+| <a name="module_harvester_node"></a> [harvester\_node](#module\_harvester\_node) | ../../modules/google-cloud/compute-engine | n/a |
 
 ## Resources
 
@@ -29,14 +28,11 @@
 | [local_file.create_cloud_config_yaml](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [local_file.default_ipxe_script_config](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [local_file.sles_startup_script_config](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
-| [local_file.ubuntu_startup_script_config](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [null_resource.copy_files_to_first_node](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
-| [null_resource.harvester_first_node_startup](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [null_resource.harvester_iso_download_checking](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
-| [null_resource.wait_for_ips](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
+| [null_resource.harvester_node_startup](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [local_file.sles_startup_script](https://registry.terraform.io/providers/hashicorp/local/latest/docs/data-sources/file) | data source |
 | [local_file.ssh_private_key](https://registry.terraform.io/providers/hashicorp/local/latest/docs/data-sources/file) | data source |
-| [local_file.ubuntu_startup_script](https://registry.terraform.io/providers/hashicorp/local/latest/docs/data-sources/file) | data source |
 
 ## Inputs
 
@@ -52,8 +48,6 @@
 | <a name="input_harvester_first_node_token"></a> [harvester\_first\_node\_token](#input\_harvester\_first\_node\_token) | Specifies the token used to join additional nodes to the Harvester cluster (HA setup). Default is 'SecretToken.123'. | `string` | `"SecretToken.123"` | no |
 | <a name="input_harvester_password"></a> [harvester\_password](#input\_harvester\_password) | Specifies the password used to access the Harvester nodes. Default is 'SecretPassword.123'. | `string` | `"SecretPassword.123"` | no |
 | <a name="input_harvester_version"></a> [harvester\_version](#input\_harvester\_version) | Specifies the Harvester version. Default is 'v1.4.0'. | `string` | `"v1.4.0"` | no |
-| <a name="input_instance_count"></a> [instance\_count](#input\_instance\_count) | Specifies the number of nodes to create (>= 1 && <=3). Default is '1'. | `number` | `1` | no |
-| <a name="input_instance_os_type"></a> [instance\_os\_type](#input\_instance\_os\_type) | Specifies the operating system type ('sles' or 'ubuntu'). Default is 'sles'. | `string` | `"sles"` | no |
 | <a name="input_instance_type"></a> [instance\_type](#input\_instance\_type) | Specifies the name of a Google Compute Engine machine type. Default is 'n2-standard-16'. | `string` | `"n2-standard-16"` | no |
 | <a name="input_ip_cidr_range"></a> [ip\_cidr\_range](#input\_ip\_cidr\_range) | Specifies the range of private IPs available for the Google Subnet. Default is '10.10.0.0/24'. | `string` | `"10.10.0.0/24"` | no |
 | <a name="input_nested_virtualization"></a> [nested\_virtualization](#input\_nested\_virtualization) | Specifies whether nested virtualization should be enabled on the instance. Default is 'true'. | `bool` | `true` | no |
@@ -72,7 +66,5 @@
 
 | Name | Description |
 |------|-------------|
-| <a name="output_additional_instances_private_ips"></a> [additional\_instances\_private\_ips](#output\_additional\_instances\_private\_ips) | n/a |
-| <a name="output_additional_instances_public_ips"></a> [additional\_instances\_public\_ips](#output\_additional\_instances\_public\_ips) | n/a |
 | <a name="output_first_instance_private_ip"></a> [first\_instance\_private\_ip](#output\_first\_instance\_private\_ip) | n/a |
 | <a name="output_first_instance_public_ip"></a> [first\_instance\_public\_ip](#output\_first\_instance\_public\_ip) | n/a |
