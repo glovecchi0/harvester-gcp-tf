@@ -37,9 +37,6 @@ os_disk_type = pd-standard
 ## -- Specifies the size of the disk attached to each node, in GB.
 os_disk_size = 50
 
-## -- Specifies the name of a Google Compute Engine machine type.
-instance_type = "n2-standard-16"
-
 ## -- Specifies whether to create an additional data disk for each VM instance.
 create_data_disk = true
 

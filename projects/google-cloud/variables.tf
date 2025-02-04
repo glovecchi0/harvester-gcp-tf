@@ -120,12 +120,6 @@ variable "os_disk_size" {
   default     = 50
 }
 
-variable "instance_type" {
-  description = "Specifies the name of a Google Compute Engine machine type. Default is 'n2-standard-16'."
-  type        = string
-  default     = "n2-standard-16"
-}
-
 variable "create_data_disk" {
   description = "Specifies whether to create an additional data disk for each VM instance. Default is 'true'."
   type        = bool

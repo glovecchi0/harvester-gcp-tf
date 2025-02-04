@@ -20,6 +20,12 @@ locals {
   subnet                                 = var.subnet == null ? module.harvester_node.subnet[0].name : var.subnet
   create_firewall                        = var.create_firewall == true ? false : var.create_firewall
   ssh_username                           = "sles"
+  instance_type = (
+    var.data_disk_count == 1 ? "n2-standard-16" :
+    var.data_disk_count == 2 ? "n2-standard-32" :
+    var.data_disk_count == 3 ? "n2-standard-64" :
+    "n2-standard-16"
+  )
 }
 
 resource "local_file" "sles_startup_script_config" {
@@ -97,7 +103,7 @@ module "harvester_node" {
   create_firewall       = var.create_firewall
   os_disk_type          = var.os_disk_type
   os_disk_size          = var.os_disk_size
-  instance_type         = var.instance_type
+  instance_type         = local.instance_type
   create_data_disk      = var.create_data_disk
   data_disk_count       = var.data_disk_count
   data_disk_type        = var.data_disk_type
