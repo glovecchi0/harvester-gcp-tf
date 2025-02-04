@@ -141,7 +141,7 @@ resource "null_resource" "copy_files_to_first_node" {
       "join_cloud_config_yaml.tpl"      = local.join_cloud_config_file
       "harvester_startup_script_sh.tpl" = local.harvester_startup_script_file
     } : filename => path
-    if fileexists(path)
+    if try(fileexists(path), false)
   }
   connection {
     type        = "ssh"
