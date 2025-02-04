@@ -3,7 +3,7 @@ scheme_version: 1
 server_url: https://192.168.122.120:443
 token: ${token}
 os:
-  hostname: to-replace
+  hostname: ${hostname}
   password: ${password}
   ntp_servers:
   - 0.suse.pool.ntp.org

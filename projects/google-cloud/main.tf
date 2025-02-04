@@ -67,9 +67,10 @@ resource "local_file" "create_cloud_config_yaml" {
 
 resource "local_file" "join_cloud_config_yaml" {
   content = templatefile("${local.join_cloud_config_template_file}", {
-    version  = var.harvester_version,
-    token    = var.harvester_first_node_token,
-    password = var.harvester_password,
+    version  = var.harvester_version
+    token    = var.harvester_first_node_token
+    password = var.harvester_password
+    hostname = var.prefix
   })
   file_permission = "0644"
   filename        = local.join_cloud_config_file
@@ -78,7 +79,7 @@ resource "local_file" "join_cloud_config_yaml" {
 resource "local_file" "harvester_startup_script" {
   content = templatefile("${local.harvester_startup_script_template_file}", {
     hostname  = var.prefix
-    public_ip = module.harvester_node.instances_public_ip,
+    public_ip = module.harvester_node.instances_public_ip
     count     = var.data_disk_count
   })
   file_permission = "0644"
@@ -163,6 +164,24 @@ resource "null_resource" "harvester_node_startup" {
       host        = module.harvester_node.instances_public_ip[0]
       user        = local.ssh_username
       private_key = data.local_file.ssh_private_key.content
+    }
+  }
+}
+
+resource "null_resource" "harvester_wait_until_api_is_ready" {
+  depends_on = [null_resource.harvester_node_startup]
+  provisioner "local-exec" {
+    command     = <<-EOF
+      resp=0
+      while [ "$${resp}" != "200" ]; do
+        resp=$(curl -k -s -o /dev/null -w "%%{http_code}" https://$${PUBLIC_IP}/ping)
+        echo "Waiting for https://$${PUBLIC_IP}/ping - response: $${resp}"
+        sleep 30s
+      done
+      EOF
+    interpreter = ["/bin/bash", "-c"]
+    environment = {
+      PUBLIC_IP = module.harvester_node.instances_public_ip[0]
     }
   }
 }
