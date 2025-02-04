@@ -129,10 +129,13 @@ resource "null_resource" "harvester_iso_download_checking" {
 resource "null_resource" "copy_files_to_first_node" {
   depends_on = [null_resource.harvester_iso_download_checking]
   for_each = {
-    "default.ipxe"                    = local.default_ipxe_script_file
-    "create_cloud_config_yaml.tpl"    = local.create_cloud_config_file
-    "join_cloud_config_yaml.tpl"      = local.join_cloud_config_file
-    "harvester_startup_script_sh.tpl" = local.harvester_startup_script_file
+    for filename, path in {
+      "default.ipxe"                    = local.default_ipxe_script_file
+      "create_cloud_config_yaml.tpl"    = local.create_cloud_config_file
+      "join_cloud_config_yaml.tpl"      = local.join_cloud_config_file
+      "harvester_startup_script_sh.tpl" = local.harvester_startup_script_file
+    } : filename => path
+    if fileexists(path)
   }
   connection {
     type        = "ssh"
