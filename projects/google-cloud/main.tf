@@ -55,10 +55,10 @@ resource "local_file" "default_ipxe_script_config" {
 
 resource "local_file" "create_cloud_config_yaml" {
   content = templatefile("${local.create_cloud_config_template_file}", {
-    version  = var.harvester_version
-    token    = var.harvester_first_node_token
+    version  = var.harvester_version,
+    token    = var.harvester_first_node_token,
+    hostname = "${var.prefix}-1",
     password = var.harvester_password
-    hostname = "${var.prefix}-1"
   })
   file_permission = "0644"
   filename        = local.create_cloud_config_file
@@ -67,10 +67,10 @@ resource "local_file" "create_cloud_config_yaml" {
 
 resource "local_file" "join_cloud_config_yaml" {
   content = templatefile("${local.join_cloud_config_template_file}", {
-    version  = var.harvester_version
-    token    = var.harvester_first_node_token
+    version  = var.harvester_version,
+    token    = var.harvester_first_node_token,
+    hostname = var.prefix,
     password = var.harvester_password
-    hostname = var.prefix
   })
   file_permission = "0644"
   filename        = local.join_cloud_config_file
@@ -168,20 +168,23 @@ resource "null_resource" "harvester_node_startup" {
   }
 }
 
-resource "null_resource" "harvester_wait_until_api_is_ready" {
+resource "null_resource" "wait_harvester_services_startup" {
   depends_on = [null_resource.harvester_node_startup]
   provisioner "local-exec" {
     command     = <<-EOF
-      resp=0
-      while [ "$${resp}" != "200" ]; do
-        resp=$(curl -k -s -o /dev/null -w "%%{http_code}" https://$${PUBLIC_IP}/ping)
-        echo "Waiting for https://$${PUBLIC_IP}/ping - response: $${resp}"
-        sleep 30s
+      count=0
+      while [ "$${count}" -lt 15 ]; do
+        resp=$(curl -k -s -o /dev/null -w "%%{http_code}" https://$${HARVESTER_URL}/ping)
+        echo "Waiting for https://$${HARVESTER_URL}/ping - response: $${resp}"
+        if [ "$${resp}" = "200" ]; then
+          ((count++))
+        fi
+        sleep 2
       done
       EOF
     interpreter = ["/bin/bash", "-c"]
     environment = {
-      PUBLIC_IP = module.harvester_node.instances_public_ip[0]
+      HARVESTER_URL = module.harvester_node.instances_public_ip[0]
     }
   }
 }
