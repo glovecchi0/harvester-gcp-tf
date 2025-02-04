@@ -133,12 +133,12 @@ variable "create_data_disk" {
 }
 
 variable "data_disk_count" {
-  description = "Specifies the number of data disks to create (>= 1 && <=3). Default is '1'."
+  description = "Specifies the number of data disks to create (1 or 3). Default is '1'."
   type        = number
   default     = 1
   validation {
-    condition     = contains([1, 2, 3], var.data_disk_count)
-    error_message = "The number of data disks must be 1, 2, or 3."
+    condition     = contains([1, 3], var.data_disk_count)
+    error_message = "The number of data disks must be 1 or 3."
   }
 }
 

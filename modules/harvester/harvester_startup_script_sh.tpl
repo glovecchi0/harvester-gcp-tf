@@ -27,24 +27,31 @@ done
 
 # Monitoring VM states and restarting them when all are 'shut off'
 ALL_SHUT_OFF=false
+TIME_LIMIT=600
+START_TIME=$(date +%s)
 while [ "$ALL_SHUT_OFF" = false ]; do
   SHUT_OFF_COUNT=0
   for i in $(seq 1 ${count}); do
-    echo "Checking state of ${hostname}-$i: $(sudo virsh domstate ${hostname}-$i 2>/dev/null)"
-    if [ "$(sudo virsh domstate ${hostname}-$i 2>/dev/null)" = "shut off" ]; then
+    echo "Checking state of harvester-node-$i: $(sudo virsh domstate harvester-node-$i 2>/dev/null)"
+    if [ "$(sudo virsh domstate harvester-node-$i 2>/dev/null)" = "shut off" ]; then
       SHUT_OFF_COUNT=$((SHUT_OFF_COUNT + 1))
     fi
   done
   if [ "$SHUT_OFF_COUNT" -eq "${count}" ]; then
     echo "All $count VMs are 'shut off'. Restarting them..."
     for i in $(seq 1 ${count}); do
-      sudo virsh start ${hostname}-$i
-      echo "${hostname}-$i started."
+      sudo virsh start harvester-node-$i
+      echo "harvester-node-$i started."
     done
     ALL_SHUT_OFF=true
   else
     echo "Waiting: Some VMs are still running. Retrying in 30 seconds..."
     sleep 30
+  fi
+  ELAPSED_TIME=$(($(date +%s) - $START_TIME))
+  if [ "$ELAPSED_TIME" -ge "$TIME_LIMIT" ]; then
+    echo "Timeout reached. Exiting the script after 10 minutes."
+    break
   fi
 done
 
