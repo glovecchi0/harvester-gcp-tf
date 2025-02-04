@@ -57,7 +57,7 @@ resource "local_file" "create_cloud_config_yaml" {
   content = templatefile("${local.create_cloud_config_template_file}", {
     version  = var.harvester_version,
     token    = var.harvester_first_node_token,
-    hostname = var.prefix,
+    hostname = "${var.prefix}-1",
     password = var.harvester_password
   })
   file_permission = "0644"
