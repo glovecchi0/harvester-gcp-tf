@@ -66,7 +66,6 @@ resource "local_file" "create_cloud_config_yaml" {
 
 
 resource "local_file" "join_cloud_config_yaml" {
-  count = var.data_disk_count > 1 ? 1 : 0
   content = templatefile("${local.join_cloud_config_template_file}", {
     version  = var.harvester_version,
     token    = var.harvester_first_node_token,
@@ -135,13 +134,10 @@ resource "null_resource" "harvester_iso_download_checking" {
 resource "null_resource" "copy_files_to_first_node" {
   depends_on = [null_resource.harvester_iso_download_checking]
   for_each = {
-    for filename, path in {
-      "default.ipxe"                    = local.default_ipxe_script_file
-      "create_cloud_config_yaml.tpl"    = local.create_cloud_config_file
-      "join_cloud_config_yaml.tpl"      = local.join_cloud_config_file
-      "harvester_startup_script_sh.tpl" = local.harvester_startup_script_file
-    } : filename => path
-    if try(fileexists(path), false)
+    "default.ipxe"                    = local.default_ipxe_script_file
+    "create_cloud_config_yaml.tpl"    = local.create_cloud_config_file
+    "join_cloud_config_yaml.tpl"      = local.join_cloud_config_file
+    "harvester_startup_script_sh.tpl" = local.harvester_startup_script_file
   }
   connection {
     type        = "ssh"
