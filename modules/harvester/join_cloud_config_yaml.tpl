@@ -21,4 +21,3 @@ install:
   device: /dev/vda
   iso_url: http://192.168.122.1/harvester-${version}-amd64.iso
   tty: tty1,115200n8
-
