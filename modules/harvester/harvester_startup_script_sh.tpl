@@ -10,33 +10,42 @@ for i in $(seq 1 ${count}); do
   if [ $i == 1 ]; then
     sudo sed -i "s/${hostname}/${hostname}-$i/g" /srv/www/harvester/create_cloud_config.yaml
     sudo virt-install --name harvester-node-$i --memory 32768 --vcpus 8 --cpu host-passthrough --disk path=/mnt/datadisk$i/harvester-data.qcow2,size=250,bus=virtio,format=qcow2 --os-type linux --os-variant generic --network bridge=virbr1,model=virtio --graphics vnc,listen=0.0.0.0,password=yourpass,port=$((5900 + i)) --console pty,target_type=serial --pxe --autostart &
+    sleep 30
   elif [ $i == 2 ]; then
     sudo sed -i "s/${hostname}/${hostname}-$i/g" /srv/www/harvester/join_cloud_config.yaml
     sudo sed -i "s/create_cloud_config.yaml/join_cloud_config.yaml/g" /srv/www/harvester/default.ipxe
     sudo virt-install --name harvester-node-$i --memory 32768 --vcpus 8 --cpu host-passthrough --disk path=/mnt/datadisk$i/harvester-data.qcow2,size=250,bus=virtio,format=qcow2 --os-type linux --os-variant generic --network bridge=virbr1,model=virtio --graphics vnc,listen=0.0.0.0,password=yourpass,port=$((5900 + i)) --console pty,target_type=serial --pxe --autostart &
+    sleep 30
   else
     sudo cp /srv/www/harvester/join_cloud_config.yaml /srv/www/harvester/join_cloud_config_$((i - 1)).yaml
     sudo sed -i "s/${hostname}-$((i - 1))/${hostname}-$i/g" /srv/www/harvester/join_cloud_config_$((i - 1)).yaml
     sudo sed -i "s/join_cloud_config.yaml/join_cloud_config_$((i - 1)).yaml/g" /srv/www/harvester/default.ipxe
     sudo virt-install --name harvester-node-$i --memory 32768 --vcpus 8 --cpu host-passthrough --disk path=/mnt/datadisk$i/harvester-data.qcow2,size=250,bus=virtio,format=qcow2 --os-type linux --os-variant generic --network bridge=virbr1,model=virtio --graphics vnc,listen=0.0.0.0,password=yourpass,port=$((5900 + i)) --console pty,target_type=serial --pxe --autostart &
-  fi
-done
-
-# Wait until all VMs are in 'running' state
-ALL_RUNNING=false
-while [ "$ALL_RUNNING" = false ]; do
-  RUNNING_COUNT=0
-  for i in $(seq 1 ${count}); do
-    echo "Checking state of harvester-node-$i: $(sudo virsh domstate harvester-node-$i 2>/dev/null)"
-    if [ "$(sudo virsh domstate harvester-node-$i 2>/dev/null)" = "running" ]; then
-      RUNNING_COUNT=$((RUNNING_COUNT + 1))
-    fi
-  done
-  if [ "$RUNNING_COUNT" -eq "${count}" ]; then
-    echo "All VMs are 'running'."
-    ALL_RUNNING=true
-  else
-    echo "Waiting: Some VMs are not running yet. Retrying in 30 seconds..."
     sleep 30
   fi
 done
+
+# Monitoring VM states and restarting them when all are 'shut off'
+ALL_SHUT_OFF=false
+while [ "$ALL_SHUT_OFF" = false ]; do
+  SHUT_OFF_COUNT=0
+  for i in $(seq 1 "${count}"); do
+    STATE=$(sudo virsh domstate "harvester-node-$i" 2>/dev/null | tr -d '[:space:]')
+    echo "Checking state of harvester-node-$i: $STATE"
+    if [ "$STATE" = "shutoff" ]; then
+      sudo virsh start "harvester-node-$i"
+      echo "harvester-node-$i started."
+      SHUT_OFF_COUNT=$((SHUT_OFF_COUNT + 1))
+    fi
+  done
+  if [ "$SHUT_OFF_COUNT" -eq "${count}" ]; then
+    ALL_SHUT_OFF=true
+    echo "All VMs have been restarted."
+  else
+    echo "Some VMs are still running. Retrying in 30 seconds..."
+    sleep 30
+  fi
+done
+
+# Expose the Harvester nested VM via the VM's public IP
+sudo nohup socat TCP-LISTEN:443,fork TCP:192.168.122.120:443 > /dev/null 2>&1 &

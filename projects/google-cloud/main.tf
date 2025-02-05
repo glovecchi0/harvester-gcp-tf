@@ -157,8 +157,7 @@ resource "null_resource" "harvester_node_startup" {
   provisioner "remote-exec" {
     inline = [
       "sudo mv /tmp/${basename(local.default_ipxe_script_file)} /tmp/${basename(local.create_cloud_config_file)} /tmp/${basename(local.join_cloud_config_file)} /tmp/${basename(local.harvester_startup_script_file)} /srv/www/harvester/",
-      "bash /srv/www/harvester/${basename(local.harvester_startup_script_file)}",
-      "sudo socat TCP-LISTEN:443,fork TCP:192.168.122.120:443 &"
+      "bash /srv/www/harvester/${basename(local.harvester_startup_script_file)}"
     ]
     connection {
       type        = "ssh"
