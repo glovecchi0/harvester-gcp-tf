@@ -108,6 +108,12 @@ variable "create_firewall" {
   default     = true
 }
 
+variable "spot_instance" {
+  description = "Specifies whether the instances should be Spot (preemptible) VMs. Default is 'true'."
+  type        = bool
+  default     = true
+}
+
 variable "os_disk_type" {
   description = "Specifies the type of the disk attached to each node (e.g., 'pd-standard', 'pd-ssd', or 'pd-balanced'). Default is 'pd-balanced'."
   type        = string
@@ -120,12 +126,6 @@ variable "os_disk_size" {
   default     = 50
 }
 
-variable "instance_type" {
-  description = "Specifies the name of a Google Compute Engine machine type. Default is 'n2-standard-16'."
-  type        = string
-  default     = "n2-standard-16"
-}
-
 variable "create_data_disk" {
   description = "Specifies whether to create an additional data disk for each VM instance. Default is 'true'."
   type        = bool
@@ -133,12 +133,12 @@ variable "create_data_disk" {
 }
 
 variable "data_disk_count" {
-  description = "Specifies the number of data disks to create (>= 1 && <=3). Default is '1'."
+  description = "Specifies the number of data disks to create (1 or 3). Default is '1'."
   type        = number
   default     = 1
   validation {
-    condition     = contains([1, 2, 3], var.data_disk_count)
-    error_message = "The number of data disks must be 1, 2, or 3."
+    condition     = contains([1, 3], var.data_disk_count)
+    error_message = "The number of data disks must be 1 or 3."
   }
 }
 

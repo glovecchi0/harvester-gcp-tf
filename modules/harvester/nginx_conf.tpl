@@ -14,8 +14,7 @@ http {
     keepalive_timeout  65;
     gzip  on;
     server {
-            listen 80 default_server;
-            listen [::]:80 default_server;
+            listen 192.168.122.1:80 default_server;
             server_name _;
             root /srv/www/harvester;
             autoindex on;

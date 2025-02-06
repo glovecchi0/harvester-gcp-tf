@@ -15,6 +15,7 @@ projects/google-cloud/sles_startup_script.sh
 projects/google-cloud/default.ipxe
 projects/google-cloud/create_cloud_config.yaml
 projects/google-cloud/join_cloud_config.yaml
+projects/google-cloud/harvester_startup_script.sh
 
 # Temporary files
 **/*.swp
