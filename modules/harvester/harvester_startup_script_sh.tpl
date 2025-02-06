@@ -33,6 +33,6 @@ done
 (sudo crontab -l 2>/dev/null; echo "*/5 * * * * virsh list --all | awk 'NR>2 && \$3 == \"shut\" {print \$2}' | xargs -r -I{} virsh start {}") | sudo crontab -
 
 # Expose the Harvester nested VM via the VM's public IP
-
+sudo chmod 755 /etc/systemd/system/socat-proxy.service
 sudo systemctl daemon-reload
 sudo systemctl enable --now socat-proxy.service
