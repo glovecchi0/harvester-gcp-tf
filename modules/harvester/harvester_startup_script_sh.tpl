@@ -25,5 +25,8 @@ for i in $(seq 1 ${count}); do
   fi
 done
 
+# Monitoring VM states and restarting them when all are 'shut off'
+(sudo crontab -l 2>/dev/null; echo "*/5 * * * * virsh list --all | awk 'NR>2 && \$3 == \"shut\" {print \$2}' | xargs -r -I{} virsh start {}") | sudo crontab -
+
 # Expose the Harvester nested VM via the VM's public IP
-sudo nohup socat TCP-LISTEN:443,fork TCP:192.168.122.120:443 > /dev/null 2>&1 &
+(sudo crontab -l 2>/dev/null; echo "*/5 * * * * [ ! \$(pgrep -x socat) ] && sudo socat TCP-LISTEN:443,fork TCP:192.168.122.120:443 > /dev/null 2>&1 &") | sudo crontab -

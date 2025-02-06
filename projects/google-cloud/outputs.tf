@@ -6,6 +6,6 @@ output "first_instance_public_ip" {
   value = module.harvester_node.instances_public_ip
 }
 
-output "Harvester_URL" {
+output "harvester_url" {
   value = "https://${module.harvester_node.instances_public_ip[0]}"
 }
