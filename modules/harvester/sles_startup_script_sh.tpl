@@ -10,6 +10,8 @@ sudo curl -L -o /etc/nginx/nginx.conf \
   https://raw.githubusercontent.com/glovecchi0/harvester-gcp-tf/refs/heads/main/modules/harvester/nginx_conf.tpl
 sudo curl -L -o /srv/www/harvester/vlan1.xml \
   https://raw.githubusercontent.com/glovecchi0/harvester-gcp-tf/refs/heads/main/modules/harvester/qemu_vlan1_xml.tpl
+sudo curl -L -o /etc/systemd/system/socat-proxy.service \
+  https://raw.githubusercontent.com/glovecchi0/harvester-gcp-tf/refs/heads/feature/harvester_startup_script/modules/harvester/socat-proxy.tpl
 sudo curl -L -o /srv/www/harvester/harvester-${version}-vmlinuz-amd64 \
   https://github.com/harvester/harvester/releases/download/${version}/harvester-${version}-vmlinuz-amd64
 sudo curl -L -o /srv/www/harvester/harvester-${version}-initrd-amd64 \
@@ -20,9 +22,6 @@ sudo curl -L -o /srv/www/harvester/harvester-${version}-amd64.iso \
   https://releases.rancher.com/harvester/${version}/harvester-${version}-amd64.iso && \
   touch /tmp/harvester_download_done
 
-# HTTP server configuration
-sudo chown nobody:nobody -R /srv/www
-sudo systemctl enable --now nginx
 
 # Disk partitioning
 for i in $(seq 1 "${count}"); do

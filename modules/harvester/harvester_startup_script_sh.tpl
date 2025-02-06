@@ -5,6 +5,10 @@ sudo virsh net-define /srv/www/harvester/vlan1.xml
 sudo virsh net-start vlan1
 sudo virsh net-autostart vlan1
 
+# HTTP server configuration
+sudo chown nobody:nobody -R /srv/www
+sudo systemctl enable --now nginx
+
 # Creation of nested VMs, based on the number of data disks
 for i in $(seq 1 ${count}); do
   if [ $i == 1 ]; then
@@ -29,4 +33,6 @@ done
 (sudo crontab -l 2>/dev/null; echo "*/5 * * * * virsh list --all | awk 'NR>2 && \$3 == \"shut\" {print \$2}' | xargs -r -I{} virsh start {}") | sudo crontab -
 
 # Expose the Harvester nested VM via the VM's public IP
-(sudo crontab -l 2>/dev/null; echo "*/5 * * * * [ ! \$(pgrep -x socat) ] && sudo socat TCP-LISTEN:443,fork TCP:192.168.122.120:443 > /dev/null 2>&1 &") | sudo crontab -
+
+sudo systemctl daemon-reload
+sudo systemctl enable --now socat-proxy.service
