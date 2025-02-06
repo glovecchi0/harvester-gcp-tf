@@ -105,6 +105,7 @@ resource "google_compute_instance" "default" {
   scheduling {
     preemptible        = var.spot_instance
     provisioning_model = var.spot_instance ? "SPOT" : "STANDARD"
+    automatic_restart  = var.spot_instance ? false : true
   }
   boot_disk {
     initialize_params {
