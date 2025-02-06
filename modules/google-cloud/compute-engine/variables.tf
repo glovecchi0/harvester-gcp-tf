@@ -108,6 +108,12 @@ variable "create_firewall" {
   default     = true
 }
 
+variable "spot_instance" {
+  description = "Specifies whether the instances should be Spot (preemptible) VMs. Default is 'true'."
+  type        = bool
+  default     = true
+}
+
 variable "os_disk_type" {
   description = "Specifies the type of the disk attached to each node (e.g., 'pd-standard', 'pd-ssd', or 'pd-balanced'). Default is 'pd-balanced'."
   type        = string

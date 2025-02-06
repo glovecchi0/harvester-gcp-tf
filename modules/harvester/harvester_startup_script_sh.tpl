@@ -25,23 +25,5 @@ for i in $(seq 1 ${count}); do
   fi
 done
 
-# Monitoring VM states and restarting them when all are 'shut off'
-for i in $(seq 1 "${count}"); do
-  ALL_SHUT_OFF=false
-  while [ "$ALL_SHUT_OFF" = false ]; do
-    STATE=$(sudo virsh domstate "harvester-node-$i" 2>/dev/null | tr -d '[:space:]')
-    echo "Checking state of harvester-node-$i: $STATE"
-    if [ "$STATE" != "shutoff" ]; then
-      echo "harvester-node-$i is not shutoff. Waiting for it to shut down."
-      sleep 5
-    else
-      sudo virsh start "harvester-node-$i"
-      echo "harvester-node-$i started."
-      ALL_SHUT_OFF=true
-    fi
-  done
-done
-echo "All VMs have been restarted."
-
 # Expose the Harvester nested VM via the VM's public IP
 sudo nohup socat TCP-LISTEN:443,fork TCP:192.168.122.120:443 > /dev/null 2>&1 &

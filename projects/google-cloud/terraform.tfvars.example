@@ -31,6 +31,9 @@ subnet = null
 ## -- Specifies whether a Google Firewall should be created for all resources.
 create_firewall = true
 
+## -- Specifies whether the instances should be Spot (preemptible) VMs.
+spot_instance = true
+
 ## -- Specifies the type of the disk attached to each node (e.g., 'pd-standard', 'pd-ssd', or 'pd-balanced').
 os_disk_type = pd-standard
 

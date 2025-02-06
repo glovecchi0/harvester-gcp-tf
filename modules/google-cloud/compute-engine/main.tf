@@ -102,6 +102,10 @@ resource "google_compute_instance" "default" {
   machine_type = var.instance_type
   zone         = random_shuffle.random_zone.result[0]
   tags         = ["${var.prefix}"]
+  scheduling {
+    preemptible        = var.spot_instance
+    provisioning_model = var.spot_instance ? "SPOT" : "STANDARD"
+  }
   boot_disk {
     initialize_params {
       type  = var.os_disk_type

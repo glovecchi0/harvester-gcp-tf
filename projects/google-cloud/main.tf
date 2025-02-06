@@ -21,10 +21,9 @@ locals {
   create_firewall                        = var.create_firewall == true ? false : var.create_firewall
   ssh_username                           = "sles"
   instance_type = (
-    var.data_disk_count == 1 ? "n2-standard-16" :
-    var.data_disk_count == 2 ? "n2-standard-32" :
-    var.data_disk_count == 3 ? "n2-standard-64" :
-    "n2-standard-16"
+    var.data_disk_count == 1 ? "n2-standard-64" :
+    var.data_disk_count == 3 ? "n2-standard-128" :
+    "n2-standard-64"
   )
 }
 
@@ -101,6 +100,7 @@ module "harvester_node" {
   vpc                   = var.vpc
   subnet                = var.subnet
   create_firewall       = var.create_firewall
+  spot_instance         = var.spot_instance
   os_disk_type          = var.os_disk_type
   os_disk_size          = var.os_disk_size
   instance_type         = local.instance_type
