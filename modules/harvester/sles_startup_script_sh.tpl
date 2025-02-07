@@ -12,6 +12,8 @@ sudo curl -L -o /srv/www/harvester/vlan1.xml \
   https://raw.githubusercontent.com/glovecchi0/harvester-gcp-tf/refs/heads/main/modules/harvester/qemu_vlan1_xml.tpl
 sudo curl -L -o /etc/systemd/system/socat-proxy.service \
   https://raw.githubusercontent.com/glovecchi0/harvester-gcp-tf/refs/heads/main/modules/harvester/socat_proxy_service.tpl
+sudo curl -L -o /usr/local/bin/restart_harvester_vms_script.sh \
+  https://raw.githubusercontent.com/glovecchi0/harvester-gcp-tf/refs/heads/main/modules/harvester/restart_harvester_vms_script_sh.tpl
 sudo curl -L -o /srv/www/harvester/harvester-${version}-vmlinuz-amd64 \
   https://github.com/harvester/harvester/releases/download/${version}/harvester-${version}-vmlinuz-amd64
 sudo curl -L -o /srv/www/harvester/harvester-${version}-initrd-amd64 \

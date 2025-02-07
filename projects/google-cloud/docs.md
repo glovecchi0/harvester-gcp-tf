@@ -41,15 +41,15 @@
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_create_data_disk"></a> [create\_data\_disk](#input\_create\_data\_disk) | Specifies whether to create an additional data disk for each VM instance. Default is 'true'. | `bool` | `true` | no |
 | <a name="input_create_firewall"></a> [create\_firewall](#input\_create\_firewall) | Specifies whether a Google Firewall should be created for all resources. Default is 'true'. | `bool` | `true` | no |
 | <a name="input_create_ssh_key_pair"></a> [create\_ssh\_key\_pair](#input\_create\_ssh\_key\_pair) | Specifies whether a new SSH key pair needs to be created for the instances. Default is 'true'. | `bool` | `true` | no |
 | <a name="input_create_vpc"></a> [create\_vpc](#input\_create\_vpc) | Specifies whether a VPC and Subnet should be created for the instances. Default is 'true'. | `bool` | `true` | no |
-| <a name="input_data_disk_count"></a> [data\_disk\_count](#input\_data\_disk\_count) | Specifies the number of data disks to create (1 or 3). Default is '1'. | `number` | `1` | no |
 | <a name="input_data_disk_size"></a> [data\_disk\_size](#input\_data\_disk\_size) | Specifies the size of the additional data disk for each VM instance, in GB. Default is '350'. | `number` | `350` | no |
 | <a name="input_data_disk_type"></a> [data\_disk\_type](#input\_data\_disk\_type) | Specifies the type of the disk attached to each node (e.g., 'pd-standard', 'pd-ssd', or 'pd-balanced'). Default is 'pd-balanced'. | `string` | `"pd-balanced"` | no |
 | <a name="input_harvester_first_node_token"></a> [harvester\_first\_node\_token](#input\_harvester\_first\_node\_token) | Specifies the token used to join additional nodes to the Harvester cluster (HA setup). Default is 'SecretToken.123'. | `string` | `"SecretToken.123"` | no |
+| <a name="input_harvester_node_count"></a> [harvester\_node\_count](#input\_harvester\_node\_count) | Specifies the number of Harvester nodes to create (1 or 3). Default is '1'. | `number` | `1` | no |
 | <a name="input_harvester_password"></a> [harvester\_password](#input\_harvester\_password) | Specifies the password used to access the Harvester nodes. Default is 'SecretPassword.123'. | `string` | `"SecretPassword.123"` | no |
+| <a name="input_harvester_production_cluster"></a> [harvester\_production\_cluster](#input\_harvester\_production\_cluster) | Specifies whether the Harvester cluster requires production-level resources. If false, instances will have 8 CPUs and 32 GB RAM; if true, they will have 16 CPUs and 64 GB RAM. Default is 'false'. | `bool` | `false` | no |
 | <a name="input_harvester_version"></a> [harvester\_version](#input\_harvester\_version) | Specifies the Harvester version. Default is 'v1.4.0'. | `string` | `"v1.4.0"` | no |
 | <a name="input_ip_cidr_range"></a> [ip\_cidr\_range](#input\_ip\_cidr\_range) | Specifies the range of private IPs available for the Google Subnet. Default is '10.10.0.0/24'. | `string` | `"10.10.0.0/24"` | no |
 | <a name="input_nested_virtualization"></a> [nested\_virtualization](#input\_nested\_virtualization) | Specifies whether nested virtualization should be enabled on the instance. Default is 'true'. | `bool` | `true` | no |
