@@ -25,7 +25,7 @@ locals {
   instance_type = (
     var.harvester_node_count == 1 ? (var.harvester_production_cluster ? "n2-standard-32" : "n2-standard-16") :
     var.harvester_node_count == 3 ? (var.harvester_production_cluster ? "n2-standard-64" : "n2-standard-32") :
-    "n2-standard-32"
+    "n2-standard-64"
   )
 }
 
