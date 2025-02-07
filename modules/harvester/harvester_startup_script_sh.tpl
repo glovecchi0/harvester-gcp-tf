@@ -32,7 +32,7 @@ done
 # Monitoring VM states and restarting them when all are 'shut off'
 #(sudo crontab -l 2>/dev/null; echo "*/5 * * * * virsh list --all | awk 'NR>2 && \$3 == \"shut\" {print \$2}' | xargs -r -I{} virsh start {}") | sudo crontab -
 
-chmod +x  /usr/local/bin/autostart_vms.sh
+sudo chmod +x  /usr/local/bin/autostart_vms.sh
 (sudo crontab -l 2>/dev/null; echo "*/2 * * * * /usr/local/bin/autostart_vms.sh") | sudo crontab -
 
 # Expose the Harvester nested VM via the VM's public IP
