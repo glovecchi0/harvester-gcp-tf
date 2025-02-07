@@ -23,16 +23,16 @@ locals {
   create_firewall                        = var.create_firewall == true ? false : var.create_firewall
   ssh_username                           = "sles"
   instance_type = (
-    var.data_disk_count == 1 ? "n2-standard-64" :
-    var.data_disk_count == 3 ? "n2-standard-128" :
-    "n2-standard-64"
-  )
+  var.harvester_number_nodes == 1 ? (var.harvester_production_cluster ? "n2-standard-32" : "n2-standard-16") :
+  var.harvester_number_nodes == 3 ? (var.harvester_production_cluster ? "n2-standard-64" : "n2-standard-32") :
+  "n2-standard-64"
+)
 }
 
 resource "local_file" "sles_startup_script_config" {
   content = templatefile("${local.sles_startup_script_template_file}", {
     version     = var.harvester_version,
-    count       = var.data_disk_count,
+    count       = var.harvester_number_nodes,
     disk_name   = local.data_disk_name,
     mount_point = local.data_disk_mount_point
   })
@@ -81,7 +81,7 @@ resource "local_file" "harvester_startup_script" {
   content = templatefile("${local.harvester_startup_script_template_file}", {
     hostname  = var.prefix
     public_ip = module.harvester_node.instances_public_ip
-    count     = var.data_disk_count
+    count     = var.harvester_number_nodes
     cpu       = local.harvester_cpu
     memory    = local.harvester_memory
   })
@@ -109,7 +109,7 @@ module "harvester_node" {
   os_disk_size          = var.os_disk_size
   instance_type         = local.instance_type
   create_data_disk      = var.create_data_disk
-  data_disk_count       = var.data_disk_count
+  data_disk_count       = var.harvester_number_nodes
   data_disk_type        = var.data_disk_type
   data_disk_size        = var.data_disk_size
   startup_script        = data.local_file.sles_startup_script.content

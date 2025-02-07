@@ -13,7 +13,7 @@ sudo curl -L -o /srv/www/harvester/vlan1.xml \
 sudo curl -L -o /etc/systemd/system/socat-proxy.service \
   https://raw.githubusercontent.com/glovecchi0/harvester-gcp-tf/refs/heads/main/modules/harvester/socat_proxy_service.tpl
 sudo curl -L -o /usr/local/bin/autostart_vms.sh \
-  https://raw.githubusercontent.com/glovecchi0/harvester-gcp-tf/refs/heads/feature/cronjob-and-dynamic-resources/modules/harvester/autostart_vms_sh.tpl
+  https://raw.githubusercontent.com/glovecchi0/harvester-gcp-tf/refs/heads/main/modules/harvester/autostart_vms_sh.tpl
 sudo curl -L -o /srv/www/harvester/harvester-${version}-vmlinuz-amd64 \
   https://github.com/harvester/harvester/releases/download/${version}/harvester-${version}-vmlinuz-amd64
 sudo curl -L -o /srv/www/harvester/harvester-${version}-initrd-amd64 \

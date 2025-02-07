@@ -132,12 +132,12 @@ variable "create_data_disk" {
   default     = true
 }
 
-variable "data_disk_count" {
-  description = "Specifies the number of data disks to create (1 or 3). Default is '1'."
+variable "harvester_number_nodes" {
+  description = "Specifies the number of harvester nodes to create (1 or 3). Default is '1'."
   type        = number
   default     = 1
   validation {
-    condition     = contains([1, 3], var.data_disk_count)
+    condition     = contains([1, 3], var.harvester_number_nodes)
     error_message = "The number of data disks must be 1 or 3."
   }
 }
