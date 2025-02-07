@@ -126,22 +126,6 @@ variable "os_disk_size" {
   default     = 50
 }
 
-variable "create_data_disk" {
-  description = "Specifies whether to create an additional data disk for each VM instance. Default is 'true'."
-  type        = bool
-  default     = true
-}
-
-variable "harvester_number_nodes" {
-  description = "Specifies the number of harvester nodes to create (1 or 3). Default is '1'."
-  type        = number
-  default     = 1
-  validation {
-    condition     = contains([1, 3], var.harvester_number_nodes)
-    error_message = "The number of data disks must be 1 or 3."
-  }
-}
-
 variable "data_disk_type" {
   description = "Specifies the type of the disk attached to each node (e.g., 'pd-standard', 'pd-ssd', or 'pd-balanced'). Default is 'pd-balanced'."
   type        = string
@@ -176,6 +160,16 @@ variable "harvester_version" {
   }
 }
 
+variable "harvester_node_count" {
+  description = "Specifies the number of Harvester nodes to create (1 or 3). Default is '1'."
+  type        = number
+  default     = 1
+  validation {
+    condition     = contains([1, 3], var.harvester_node_count)
+    error_message = "The number of data disks must be 1 or 3."
+  }
+}
+
 variable "harvester_first_node_token" {
   description = "Specifies the token used to join additional nodes to the Harvester cluster (HA setup). Default is 'SecretToken.123'."
   type        = string
@@ -189,7 +183,7 @@ variable "harvester_password" {
 }
 
 variable "harvester_production_cluster" {
-  description = "Specifies whether the Harvester cluster requires production-level resources. If false, they will have 8 CPUs and 32 GB RAM; if true, they will have 16 CPUs and 64 GB RAM"
+  description = "Specifies whether the Harvester cluster requires production-level resources. If false, instances will have 8 CPUs and 32 GB RAM; if true, they will have 16 CPUs and 64 GB RAM. Default is 'false'."
   type        = bool
   default     = false
 }

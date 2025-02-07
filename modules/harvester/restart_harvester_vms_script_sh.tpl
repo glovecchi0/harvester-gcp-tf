@@ -1,8 +1,8 @@
 #!/bin/bash
 
-LOGFILE="/var/log/autostart_vms.log"
+LOGFILE="/var/log/restart_harvester_vms_script.log"
 
-# List all shut-off VMs and start them
+# Restart nested VMs that for some reason are not running ('shut off' state)
 virsh list --all | awk '$3 == "shut" {print $2}' | while read -r vm; do
     if [[ -n "$vm" ]]; then
         echo "$(date): Starting VM $vm" | tee -a "$LOGFILE"
