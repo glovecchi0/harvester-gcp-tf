@@ -189,7 +189,7 @@ variable "harvester_password" {
 }
 
 variable "harvester_production_cluster" {
-  description = "Specifies whether the Harvester cluster machines will require production-level resources. If false, they will have 8 CPUs and 32 GB RAM; if true, they will have 16 CPUs and 64 GB RAM"
+  description = "Specifies whether the Harvester cluster requires production-level resources. If false, they will have 8 CPUs and 32 GB RAM; if true, they will have 16 CPUs and 64 GB RAM"
   type        = bool
   default     = false
 }

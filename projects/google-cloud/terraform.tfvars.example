@@ -57,3 +57,6 @@ startup_script = null
 
 ## -- Specifies whether nested virtualization should be enabled on the instance.
 nested_virtualization = true
+
+## -- Specifies whether the harvester cluster requires production level resources. If false, they will have 8 CPUs and 32 GB RAM; if true, they will have 16 CPUs and 64 GB RAM
+harvester_production_cluster = false
