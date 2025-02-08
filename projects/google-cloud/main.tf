@@ -12,8 +12,8 @@ locals {
   join_cloud_config_file                 = "${path.cwd}/join_cloud_config.yaml"
   harvester_startup_script_template_file = "../../modules/harvester/harvester_startup_script_sh.tpl"
   harvester_startup_script_file          = "${path.cwd}/harvester_startup_script.sh"
-  harvester_cpu                          = var.harvester_cluster_size == false ? 8 : 16
-  harvester_memory                       = var.harvester_cluster_size == false ? 32768 : 65536
+  harvester_cpu                          = var.harvester_cluster_size == "small" ? 8 : 16
+  harvester_memory                       = var.harvester_cluster_size == "small" ? 32768 : 65536
   create_ssh_key_pair                    = var.create_ssh_key_pair == true ? false : true
   ssh_private_key_path                   = var.ssh_private_key_path == null ? "${path.cwd}/${var.prefix}-ssh_private_key.pem" : var.ssh_private_key_path
   ssh_public_key_path                    = var.ssh_public_key_path == null ? "${path.cwd}/${var.prefix}-ssh_public_key.pem" : var.ssh_public_key_path
