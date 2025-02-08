@@ -165,9 +165,3 @@ variable "startup_script" {
   type        = string
   default     = null
 }
-
-variable "nested_virtualization" {
-  description = "Specifies whether nested virtualization should be enabled on the instance. Default is 'true'."
-  type        = bool
-  default     = true
-}

@@ -144,19 +144,13 @@ variable "startup_script" {
   default     = null
 }
 
-variable "nested_virtualization" {
-  description = "Specifies whether nested virtualization should be enabled on the instance. Default is 'true'."
-  type        = bool
-  default     = true
-}
-
 variable "harvester_version" {
-  description = "Specifies the Harvester version. Default is 'v1.4.0'."
+  description = "Specifies the Harvester version. Default is 'v1.4.1'."
   type        = string
-  default     = "v1.4.0"
+  default     = "v1.4.1"
   validation {
     condition     = can(regex("^v[0-9]+\\.[0-9]+\\.[0-9]+$", var.harvester_version))
-    error_message = "The Harvester version must start with 'v' followed by a valid version number (e.g., v1.4.0)."
+    error_message = "The Harvester version must start with 'v' followed by a valid version number (e.g., v1.4.1)."
   }
 }
 
@@ -182,8 +176,13 @@ variable "harvester_password" {
   default     = "SecretPassword.123"
 }
 
-variable "harvester_production_cluster" {
-  description = "Specifies whether the Harvester cluster requires production-level resources. If false, instances will have 8 CPUs and 32 GB RAM; if true, they will have 16 CPUs and 64 GB RAM. Default is 'false'."
-  type        = bool
-  default     = false
+variable "harvester_cluster_size" {
+  description = "Specifies the size of the Harvester cluster. Allowed values are 'small' (8 CPUs, 32 GB RAM) and 'medium' (16 CPUs, 64 GB RAM). Default is 'small'."
+  type        = string
+  default     = "small"
+
+  validation {
+    condition     = contains(["small", "medium"], var.harvester_cluster_size)
+    error_message = "Invalid value for harvester_cluster_size. Allowed values are 'small' or 'medium'."
+  }
 }
