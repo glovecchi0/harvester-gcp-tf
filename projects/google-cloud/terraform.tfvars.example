@@ -35,13 +35,13 @@ create_firewall = true
 spot_instance = true
 
 ## -- Specifies the type of the disk attached to each node (e.g., 'pd-standard', 'pd-ssd', or 'pd-balanced').
-os_disk_type = pd-standard
+os_disk_type = "pd-standard"
 
 ## -- Specifies the size of the disk attached to each node, in GB.
 os_disk_size = 50
 
 ## -- Specifies the type of the disk attached to each node (e.g., 'pd-standard', 'pd-ssd', or 'pd-balanced').
-data_disk_type = pd-balanced
+data_disk_type = "pd-balanced"
 
 ## -- Specifies the size of the additional data disk for each VM instance, in GB.
 data_disk_size = 350
