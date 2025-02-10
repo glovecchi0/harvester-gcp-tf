@@ -41,7 +41,7 @@ sudo systemctl enable --now socat-proxy.service
 # Wait for the Harvester services to start
 attempts=0
 while [ "$attempts" -lt 15 ]; do
-  resp=$(curl -k -s -o /dev/null -w "%{{http_code}}" https://$(curl -s http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/access-configs/0/external-ip -H "Metadata-Flavor: Google")/ping)
+  resp=$(curl -k -s -o /dev/null -w "{{http_code}}" https://$(curl -s http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/access-configs/0/external-ip -H "Metadata-Flavor: Google")/ping)
   echo 'Waiting for https://$(curl -s http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/access-configs/0/external-ip -H "Metadata-Flavor: Google")/ping - response: $resp'
   if [ "$resp" = "200" ]; then
     ((attempts++))
