@@ -29,7 +29,7 @@ for i in $(seq 1 ${count}); do
   fi
 done
 
-# Monitoring VM states and restarting them when all are 'shut off'
+# Monitoring nested VM states and restarting them when all are 'shut off'
 sudo chmod +x  /usr/local/bin/restart_harvester_vms_script.sh
 (sudo crontab -l 2>/dev/null; echo "*/2 * * * * /usr/local/bin/restart_harvester_vms_script.sh") | sudo crontab -
 
@@ -37,6 +37,17 @@ sudo chmod +x  /usr/local/bin/restart_harvester_vms_script.sh
 sudo chmod 755 /etc/systemd/system/socat-proxy.service
 sudo systemctl daemon-reload
 sudo systemctl enable --now socat-proxy.service
+
+# Wait for the Harvester services to start
+attempts=0
+while [ "$attempts" -lt 15 ]; do
+  resp=$(curl -k -s -o /dev/null -w "\\%{http_code}" https://$(curl -s http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/access-configs/0/external-ip -H "Metadata-Flavor: Google")/ping)
+  echo 'Waiting for https://$(curl -s http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/access-configs/0/external-ip -H "Metadata-Flavor: Google")/ping - response: $resp'
+  if [ "$resp" = "200" ]; then
+    ((attempts++))
+  fi
+  sleep 2
+done
 
 # Copying the KUBECONFIG file from the RKE2 cluster under the hood of Harvester
 sudo sshpass -p "${password}" ssh -oStrictHostKeyChecking=no "rancher@192.168.122.120" "sudo cat /etc/rancher/rke2/rke2.yaml" > /tmp/rke2.yaml

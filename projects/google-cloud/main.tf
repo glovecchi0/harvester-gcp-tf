@@ -172,29 +172,8 @@ resource "null_resource" "harvester_node_startup" {
   }
 }
 
-resource "null_resource" "wait_harvester_services_startup" {
-  depends_on = [null_resource.harvester_node_startup]
-  provisioner "local-exec" {
-    command     = <<-EOF
-      count=0
-      while [ "$${count}" -lt 15 ]; do
-        resp=$(curl -k -s -o /dev/null -w "%%{http_code}" https://$${HARVESTER_URL}/ping)
-        echo "Waiting for https://$${HARVESTER_URL}/ping - response: $${resp}"
-        if [ "$${resp}" = "200" ]; then
-          ((count++))
-        fi
-        sleep 2
-      done
-      EOF
-    interpreter = ["/bin/bash", "-c"]
-    environment = {
-      HARVESTER_URL = module.harvester_node.instances_public_ip[0]
-    }
-  }
-}
-
 resource "ssh_resource" "retrieve_kubeconfig" {
-  depends_on = [null_resource.wait_harvester_services_startup]
+  depends_on = [null_resource.harvester_node_startup]
   host       = module.harvester_node.instances_public_ip[0]
   commands = [
     "sudo sed 's/127.0.0.1/${module.harvester_node.instances_public_ip[0]}/g' /tmp/rke2.yaml"
