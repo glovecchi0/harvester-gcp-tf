@@ -115,9 +115,9 @@ variable "spot_instance" {
 }
 
 variable "os_disk_type" {
-  description = "Specifies the type of the disk attached to each node (e.g., 'pd-standard', 'pd-ssd', or 'pd-balanced'). Default is 'pd-balanced'."
+  description = "Specifies the type of the disk attached to each node (e.g., 'pd-standard', 'pd-ssd', or 'pd-balanced'). Default is 'pd-ssd'."
   type        = string
-  default     = "pd-balanced"
+  default     = "pd-ssd"
 }
 
 variable "os_disk_size" {
@@ -127,9 +127,9 @@ variable "os_disk_size" {
 }
 
 variable "data_disk_type" {
-  description = "Specifies the type of the disk attached to each node (e.g., 'pd-standard', 'pd-ssd', or 'pd-balanced'). Default is 'pd-balanced'."
+  description = "Specifies the type of the disk attached to each node (e.g., 'pd-standard', 'pd-ssd', or 'pd-balanced'). Default is 'pd-ssd'."
   type        = string
-  default     = "pd-balanced"
+  default     = "pd-ssd"
 }
 
 variable "data_disk_size" {
