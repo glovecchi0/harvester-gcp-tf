@@ -22,6 +22,7 @@ locals {
   subnet                                 = var.subnet == null ? module.harvester_node.subnet[0].name : var.subnet
   create_firewall                        = var.create_firewall == true ? false : var.create_firewall
   ssh_username                           = "sles"
+  kubeconfig_file                        = "${path.cwd}/${var.prefix}_kube_config.yml"
   instance_type = (
     var.harvester_node_count == 1 ? (var.harvester_cluster_size == "small" ? "n2-standard-16" : "n2-standard-32") :
     var.harvester_node_count == 3 ? (var.harvester_cluster_size == "small" ? "n2-standard-32" : "n2-standard-64") :
@@ -84,6 +85,7 @@ resource "local_file" "harvester_startup_script" {
     count     = var.harvester_node_count
     cpu       = local.harvester_cpu
     memory    = local.harvester_memory
+    password  = var.harvester_password
   })
   file_permission = "0644"
   filename        = local.harvester_startup_script_file
@@ -191,29 +193,18 @@ resource "null_resource" "wait_harvester_services_startup" {
   }
 }
 
-resource "null_resource" "kubeconfig_file" {
+resource "ssh_resource" "retrieve_kubeconfig" {
   depends_on = [null_resource.wait_harvester_services_startup]
-  provisioner "remote-exec" {
-    inline = [
-      "sudo sshpass -p $(sudo cat /srv/www/harvester/create_cloud_config.yaml | grep password | awk '{print $2}') ssh -oStrictHostKeyChecking=no rancher@192.168.122.120 'sudo cat /etc/rancher/rke2/rke2.yaml' > /tmp/rke2.yaml",
-      "sudo sed -i '/certificate-authority-data:/c\\    insecure-skip-tls-verify: true' /tmp/rke2.yaml",
-      "sudo sed -i 's/127.0.0.1:6443/${module.harvester_node.instances_public_ip[0]}:6443/g' /tmp/rke2.yaml"
-    ]
-    connection {
-      type        = "ssh"
-      host        = module.harvester_node.instances_public_ip[0]
-      user        = local.ssh_username
-      private_key = data.local_file.ssh_private_key.content
-    }
-  }
+  host       = module.harvester_node.instances_public_ip[0]
+  commands = [
+    "sudo sed 's/127.0.0.1/${module.harvester_node.instances_public_ip[0]}/g' /tmp/rke2.yaml"
+  ]
+  user        = local.ssh_username
+  private_key = data.local_file.ssh_private_key.content
 }
 
-resource "null_resource" "kubeconfig_scp" {
-  depends_on = [null_resource.kubeconfig_file]
-  provisioner "local-exec" {
-    command     = <<-EOF
-      scp -i ${local.ssh_private_key_path} -o StrictHostKeyChecking=no ${local.ssh_username}@${module.harvester_node.instances_public_ip[0]}:/tmp/rke2.yaml ${path.cwd}/${var.prefix}-kubeconfig.yaml
-      EOF
-    interpreter = ["/bin/bash", "-c"]
-  }
+resource "local_file" "kube_config_yaml" {
+  filename        = pathexpand(local.kubeconfig_file)
+  content         = ssh_resource.retrieve_kubeconfig.result
+  file_permission = "0600"
 }

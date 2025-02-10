@@ -30,8 +30,6 @@ for i in $(seq 1 ${count}); do
 done
 
 # Monitoring VM states and restarting them when all are 'shut off'
-#(sudo crontab -l 2>/dev/null; echo "*/5 * * * * virsh list --all | awk 'NR>2 && \$3 == \"shut\" {print \$2}' | xargs -r -I{} virsh start {}") | sudo crontab -
-
 sudo chmod +x  /usr/local/bin/restart_harvester_vms_script.sh
 (sudo crontab -l 2>/dev/null; echo "*/2 * * * * /usr/local/bin/restart_harvester_vms_script.sh") | sudo crontab -
 
@@ -39,3 +37,6 @@ sudo chmod +x  /usr/local/bin/restart_harvester_vms_script.sh
 sudo chmod 755 /etc/systemd/system/socat-proxy.service
 sudo systemctl daemon-reload
 sudo systemctl enable --now socat-proxy.service
+
+# Copying the KUBECONFIG file from the RKE2 cluster under the hood of Harvester
+sudo sshpass -p "${password}" ssh -oStrictHostKeyChecking=no "rancher@192.168.122.120" "sudo cat /etc/rancher/rke2/rke2.yaml" > /tmp/rke2.yaml

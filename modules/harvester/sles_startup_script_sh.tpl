@@ -26,7 +26,6 @@ sudo curl -L -o /srv/www/harvester/harvester-${version}-amd64.iso \
   https://releases.rancher.com/harvester/${version}/harvester-${version}-amd64.iso && \
   touch /tmp/harvester_download_done
 
-
 # Disk partitioning
 for i in $(seq 1 "${count}"); do
   if [ -b "${disk_name}$(printf "\x$(printf %x $((97 + i)))")" ]; then
