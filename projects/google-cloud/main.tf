@@ -12,8 +12,8 @@ locals {
   join_cloud_config_file                 = "${path.cwd}/join_cloud_config.yaml"
   harvester_startup_script_template_file = "../../modules/harvester/harvester_startup_script_sh.tpl"
   harvester_startup_script_file          = "${path.cwd}/harvester_startup_script.sh"
-  harvester_cpu                          = var.harvester_production_cluster == false ? 8 : 16
-  harvester_memory                       = var.harvester_production_cluster == false ? 32768 : 65536
+  harvester_cpu                          = var.harvester_cluster_size == "small" ? 8 : 16
+  harvester_memory                       = var.harvester_cluster_size == "small" ? 32768 : 65536
   create_ssh_key_pair                    = var.create_ssh_key_pair == true ? false : true
   ssh_private_key_path                   = var.ssh_private_key_path == null ? "${path.cwd}/${var.prefix}-ssh_private_key.pem" : var.ssh_private_key_path
   ssh_public_key_path                    = var.ssh_public_key_path == null ? "${path.cwd}/${var.prefix}-ssh_public_key.pem" : var.ssh_public_key_path
@@ -23,8 +23,8 @@ locals {
   create_firewall                        = var.create_firewall == true ? false : var.create_firewall
   ssh_username                           = "sles"
   instance_type = (
-    var.harvester_node_count == 1 ? (var.harvester_production_cluster ? "n2-standard-32" : "n2-standard-16") :
-    var.harvester_node_count == 3 ? (var.harvester_production_cluster ? "n2-standard-64" : "n2-standard-32") :
+    var.harvester_node_count == 1 ? (var.harvester_cluster_size == "small" ? "n2-standard-16" : "n2-standard-32") :
+    var.harvester_node_count == 3 ? (var.harvester_cluster_size == "small" ? "n2-standard-32" : "n2-standard-64") :
     "n2-standard-64"
   )
 }
@@ -91,28 +91,27 @@ resource "local_file" "harvester_startup_script" {
 
 
 module "harvester_node" {
-  depends_on            = [local_file.sles_startup_script_config]
-  source                = "../../modules/google-cloud/compute-engine"
-  prefix                = var.prefix
-  project_id            = var.project_id
-  region                = var.region
-  create_ssh_key_pair   = var.create_ssh_key_pair
-  ssh_private_key_path  = local.ssh_private_key_path
-  ssh_public_key_path   = local.ssh_public_key_path
-  ip_cidr_range         = var.ip_cidr_range
-  create_vpc            = var.create_vpc
-  vpc                   = var.vpc
-  subnet                = var.subnet
-  create_firewall       = var.create_firewall
-  spot_instance         = var.spot_instance
-  os_disk_type          = var.os_disk_type
-  os_disk_size          = var.os_disk_size
-  instance_type         = local.instance_type
-  data_disk_count       = var.harvester_node_count
-  data_disk_type        = var.data_disk_type
-  data_disk_size        = var.data_disk_size
-  startup_script        = data.local_file.sles_startup_script.content
-  nested_virtualization = var.nested_virtualization
+  depends_on           = [local_file.sles_startup_script_config]
+  source               = "../../modules/google-cloud/compute-engine"
+  prefix               = var.prefix
+  project_id           = var.project_id
+  region               = var.region
+  create_ssh_key_pair  = var.create_ssh_key_pair
+  ssh_private_key_path = local.ssh_private_key_path
+  ssh_public_key_path  = local.ssh_public_key_path
+  ip_cidr_range        = var.ip_cidr_range
+  create_vpc           = var.create_vpc
+  vpc                  = var.vpc
+  subnet               = var.subnet
+  create_firewall      = var.create_firewall
+  spot_instance        = var.spot_instance
+  os_disk_type         = var.os_disk_type
+  os_disk_size         = var.os_disk_size
+  instance_type        = local.instance_type
+  data_disk_count      = var.harvester_node_count
+  data_disk_type       = var.data_disk_type
+  data_disk_size       = var.data_disk_size
+  startup_script       = data.local_file.sles_startup_script.content
 }
 
 data "local_file" "ssh_private_key" {

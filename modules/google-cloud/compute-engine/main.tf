@@ -144,6 +144,6 @@ resource "google_compute_instance" "default" {
     ]
   }
   advanced_machine_features {
-    enable_nested_virtualization = var.nested_virtualization
+    enable_nested_virtualization = true
   }
 }
