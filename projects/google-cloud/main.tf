@@ -190,3 +190,20 @@ resource "null_resource" "wait_harvester_services_startup" {
     }
   }
 }
+
+resource "null_resource" "kubeconfig_file" {
+  depends_on = [null_resource.wait_harvester_services_startup]
+  provisioner "remote-exec" {
+    inline = [
+      "sudo sshpass -p $(sudo cat /srv/www/harvester/create_cloud_config.yaml | grep password | awk '{print $2}') ssh -oStrictHostKeyChecking=no rancher@192.168.122.120 'sudo cat /etc/rancher/rke2/rke2.yaml' > /tmp/rke2.yaml",
+      "sudo sed -i '/certificate-authority-data:/c\\    insecure-skip-tls-verify: true' /tmp/rke2.yaml",
+      "sudo sed -i 's/127.0.0.1:6443/${module.harvester_node.instances_public_ip[0]}:6443/g' /tmp/rke2.yaml"
+    ]
+    connection {
+      type        = "ssh"
+      host        = module.harvester_node.instances_public_ip[0]
+      user        = local.ssh_username
+      private_key = data.local_file.ssh_private_key.content
+    }
+  }
+}

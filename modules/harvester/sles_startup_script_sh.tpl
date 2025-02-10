@@ -1,7 +1,9 @@
 #!/bin/bash
 
 # Installation of pre-requisite packages
-sudo zypper --non-interactive install parted util-linux virt-install libvirt qemu-kvm python3-websockify novnc socat nginx
+sudo zypper --non-interactive addrepo https://download.opensuse.org/repositories/network/SLE_15/network.repo
+sudo zypper --non-interactive --gpg-auto-import-keys refresh
+sudo zypper --non-interactive install parted util-linux virt-install libvirt qemu-kvm python3-websockify novnc socat nginx sshpass
 sudo systemctl enable --now libvirtd
 sudo mkdir -p /srv/www/harvester
 
@@ -11,7 +13,7 @@ sudo curl -L -o /etc/nginx/nginx.conf \
 sudo curl -L -o /srv/www/harvester/vlan1.xml \
   https://raw.githubusercontent.com/glovecchi0/harvester-gcp-tf/refs/heads/main/modules/harvester/qemu_vlan1_xml.tpl
 sudo curl -L -o /etc/systemd/system/socat-proxy.service \
-  https://raw.githubusercontent.com/glovecchi0/harvester-gcp-tf/refs/heads/main/modules/harvester/socat_proxy_service.tpl
+  https://raw.githubusercontent.com/glovecchi0/harvester-gcp-tf/refs/heads/12-need-to-execute-kubectl-commands-from-local-to-harvester-running-on-nested-vms/modules/harvester/socat_proxy_service.tpl
 sudo curl -L -o /usr/local/bin/restart_harvester_vms_script.sh \
   https://raw.githubusercontent.com/glovecchi0/harvester-gcp-tf/refs/heads/main/modules/harvester/restart_harvester_vms_script_sh.tpl
 sudo curl -L -o /srv/www/harvester/harvester-${version}-vmlinuz-amd64 \
