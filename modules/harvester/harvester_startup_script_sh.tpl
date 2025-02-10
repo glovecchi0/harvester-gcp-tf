@@ -43,11 +43,11 @@ attempts=0
 while [ "$attempts" -lt 15 ]; do
   ip=$(curl -s http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/access-configs/0/external-ip -H "Metadata-Flavor: Google")
   response=$(curl -k -s "https://$ip/ping")
-  echo "Waiting for https://$ip/ping - response: $response"
   if [ "$response" == "pong" ]; then
+    echo "Waiting for https://$ip/ping - response: $response"
     ((attempts++))
   else
-    echo "Response is not 'pong', retrying in 2 seconds..."
+    echo "Waiting for https://$ip/ping - response is not 'pong', retrying in 2 seconds..."
   fi
   sleep 2
 done
