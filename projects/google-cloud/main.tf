@@ -207,3 +207,13 @@ resource "null_resource" "kubeconfig_file" {
     }
   }
 }
+
+resource "null_resource" "kubeconfig_scp" {
+  depends_on = [null_resource.kubeconfig_file]
+  provisioner "local-exec" {
+    command     = <<-EOF
+      scp -i ${var.ssh_private_key_path} -o -oStrictHostKeyChecking=no ${local.ssh_username}@${module.harvester_node.instances_public_ip[0]}:/tmp/rke2.yaml ${path.cwd}/${var.prefix}-kubeconfig.yaml
+      EOF
+    interpreter = ["/bin/bash", "-c"]
+  }
+}
