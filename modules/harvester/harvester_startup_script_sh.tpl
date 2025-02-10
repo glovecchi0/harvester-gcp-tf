@@ -44,12 +44,17 @@ while [ "$attempts" -lt 15 ]; do
   ip=$(curl -s http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/access-configs/0/external-ip -H "Metadata-Flavor: Google")
   response=$(curl -i -s "https://$ip/ping")
   http_code=$(echo "$response" | grep HTTP | awk '{print $2}')
-  if [ "$http_code" -eq 200 ]; then
-    echo "Waiting for https://$ip/ping - response: $http_code"
-    ((attempts++))
+  if [ -n "$http_code" ]; then
+    # Confronta se il codice di stato è 200
+    if [ "$http_code" -eq 200 ]; then
+      echo "Waiting for https://$ip/ping - response: $http_code"
+      ((attempts++))
+    else
+      echo "Waiting for https://$ip/ping - response: $http_code (retrying)"
+    fi
   else
-    echo "Waiting for https://$ip/ping - response: $http_code (retrying)"
-  fi  
+    echo "No HTTP response received from https://$ip/ping (retrying)"
+  fi
   sleep 2
 done
 
