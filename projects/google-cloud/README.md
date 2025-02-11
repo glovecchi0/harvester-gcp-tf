@@ -63,6 +63,16 @@ ssh rancher@<NESTED_VM_IPV4> # The password can be obtained from variable harves
 
 #### Terraform execution process and Harvester UI access
 
+```
+# terraform.tfvars
+
+prefix = "jlagos"
+project_id = "<project-id>"
+region = "europe-west8"
+harvester_node_count = 3
+harvester_cluster_size = "small"
+```
+
 ![](../../images/1-tfinitial-execution.png)
 ![](../../images/2-waiting-until-harvester-is-up.png)
 ![](../../images/3-tf-output.png)
