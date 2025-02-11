@@ -7,6 +7,7 @@
     - `project_id` to specify in which Project the resources will be created
     - `region` to specify the Google region where resources will be created
     - `harvester_node_count` to specify the number of Harvester nodes to create (1 or 3)
+    - `harvester_cluster_size` To specify the size Harvester nodes created.(small or medium)
 - Make sure you are logged into your Google Account from your local Terminal. See the preparatory steps [here](../../modules/google-cloud/README.md).
 
 #### Terraform Apply
@@ -33,144 +34,58 @@ tofu init -upgrade && tofu apply -auto-approve
 tofu destroy -auto-approve
 ```
 
+## How to execute kubectl commands to Harvester cluster
+
+#### Run the following command
+
+```bash
+export KUBECONFIG=<prefix>_kube_config.yaml
+```
+
+
 ## How to access Google VMs
 
-#### Run the following command (if user is `sles`)
+#### Run the following command
 
 ```bash
 ssh -oStrictHostKeyChecking=no -i <PREFIX>-ssh_private_key.pem sles@<PUBLIC_IPV4>
 ```
 
-## How to create the nested Harvester VM
+## How to access Harvester Nested VMs
 
-#### Start and enable the virtual network called `default` managed by libvirt
-
-```bash
-virsh net-start default
-virsh net-autostart default
-```
-
-#### Create the nested Harvester VM
+#### Run the following command within Google VM where harvester is running
 
 ```bash
-virt-install \
-  --name harvester-node \
-  --memory 32768 \
-  --vcpus 8 \
-  --cpu host-passthrough \
-  --disk path=/mnt/newdisk/harvester-data.qcow2,size=250,bus=virtio,format=qcow2 \
-  --cdrom /var/lib/libvirt/images/harvester.iso \
-  --os-type linux \
-  --os-variant generic \
-  --network bridge=virbr0,model=virtio \
-  --graphics vnc,listen=0.0.0.0,password=yourpass \
-  --console pty,target_type=serial \
-  --boot menu=on,useserial=on,cdrom,hd \
-  --autostart
+ssh rancher@<NESTED_VM_IPV4> # The password can be obtained from variable harvester_password or from join/create_cloud_config.yaml file in the current folder
 ```
 
-## How to proceed with the Harvester ISO installation
+# DEMOSTRATION (Harvester with 3 small nodes)
 
-#### Expose the nested VM console over WebSocket via noVNC
+#### Terraform execution process and Harvester UI access
 
 ```bash
-websockify --web /usr/share/novnc/ --wrap-mode=ignore 6080 localhost:5900
+$ cat terraform.tfvars
+prefix = "jlagos"
+project_id = "<project-id>"
+region = "europe-west8"
+harvester_node_count = 3
+harvester_cluster_size = "small"
 ```
 
-#### Connect to the nested VM console via browser and complete the Harvester ISO installation --> Chrome > `http://<PUBLIC_IPV4>:6080`
+![](../../images/1-tfinitial-execution.png)
+![](../../images/2-waiting-until-harvester-is-up.png)
+![](../../images/3-tf-output.png)
+![](../../images/4-harvester-login-page.png)
+![](../../images/5-harvester-hosts.png)
 
-## How to connect to the nested VM via SSH
+#### SSH into GCP VM
 
-#### Once the ISO installation is complete, the nested VM will reboot and expose the assigned IP
+![](../../images/6-gcp-vm-ssh.png)
 
-#### Run the following command
+#### SSH from GCP VM to Harvester Nested VM
 
-```bash
-ssh rancher@<NESTED_VM_IPV4> # The password will be the one entered in the previous point
-```
+![](../../images/7-nested-vm-ssh.png)
 
-## How to connect to the nested VM via browser
+#### Kubectl commands execution
 
-#### Run the following command
-
-```bash
-socat TCP-LISTEN:443,fork TCP:<NESTED_VM_IPV4>:443
-```
-
-#### Connect to the Harvester console via browser --> Chrome > `https://<PUBLIC_IPV4>`
-
-# DEMOSTRATION (single VM)
-
-#### Google VM deployment
-
-![](../../images/1-tfvars.png)
-
-![](../../images/2-tfapply-1.png)
-
-![](../../images/3-tfapply-2.png)
-
-![](../../images/4-GCP-VM-login.png)
-
-#### Nested VM deployment
-
-![](../../images/5-NestedVM-deploy.png)
-
-![](../../images/6-NestedVM-console-1.png)
-
-#### Harvester ISO installation
-
-![](../../images/7-NestedVM-console-2.png)
-
-![](../../images/8-HW-checks)
-
-![](../../images/9-Installation-mode.png)
-
-![](../../images/10-Data-disk.png)
-
-![](../../images/11-Network-config-1.png)
-
-![](../../images/12-Network-config-2.png)
-
-![](../../images/13-Network-config-3.png)
-
-![](../../images/14-Hostname.png)
-
-![](../../images/15-DNS-Server.png)
-
-![](../../images/16-VIP-config-1.png)
-
-![](../../images/17-VIP-config-2.png)
-
-![](../../images/18-VIP-config-3.png)
-
-![](../../images/19-Token.png)
-
-![](../../images/20-PWD.png)
-
-![](../../images/21-NTP-Server.png)
-
-![](../../images/22-Proxy.png)
-
-![](../../images/23-SSH-key.png)
-
-![](../../images/24-Remote-config.png)
-
-![](../../images/25-Recap.png)
-
-![](../../images/26-Deployment-in-progress.png)
-
-![](../../images/27-Deployment-finished.png)
-
-#### Nested VM access
-
-![](../../images/28-NestedVM-SSH-access.png)
-
-![](../../images/29-NestedVM-browser-access-1.png)
-
-#### Harvester UI access
-
-![](../../images/30-Harvester-UI-1.png)
-
-![](../../images/31-Harvester-UI-2.png)
-
-![](../../images/32-Harvester-UI-3.png)
+![](../../images/8-kubectl-commands.png)
