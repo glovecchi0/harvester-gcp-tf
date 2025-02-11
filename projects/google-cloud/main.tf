@@ -22,6 +22,7 @@ locals {
   subnet                                 = var.subnet == null ? module.harvester_node.subnet[0].name : var.subnet
   create_firewall                        = var.create_firewall == true ? false : var.create_firewall
   ssh_username                           = "sles"
+  kubeconfig_file                        = "${path.cwd}/${var.prefix}_kube_config.yml"
   instance_type = (
     var.harvester_node_count == 1 ? (var.harvester_cluster_size == "small" ? "n2-standard-16" : "n2-standard-32") :
     var.harvester_node_count == 3 ? (var.harvester_cluster_size == "small" ? "n2-standard-32" : "n2-standard-64") :
@@ -84,6 +85,7 @@ resource "local_file" "harvester_startup_script" {
     count     = var.harvester_node_count
     cpu       = local.harvester_cpu
     memory    = local.harvester_memory
+    password  = var.harvester_password
   })
   file_permission = "0644"
   filename        = local.harvester_startup_script_file
@@ -170,23 +172,18 @@ resource "null_resource" "harvester_node_startup" {
   }
 }
 
-resource "null_resource" "wait_harvester_services_startup" {
+resource "ssh_resource" "retrieve_kubeconfig" {
   depends_on = [null_resource.harvester_node_startup]
-  provisioner "local-exec" {
-    command     = <<-EOF
-      count=0
-      while [ "$${count}" -lt 15 ]; do
-        resp=$(curl -k -s -o /dev/null -w "%%{http_code}" https://$${HARVESTER_URL}/ping)
-        echo "Waiting for https://$${HARVESTER_URL}/ping - response: $${resp}"
-        if [ "$${resp}" = "200" ]; then
-          ((count++))
-        fi
-        sleep 2
-      done
-      EOF
-    interpreter = ["/bin/bash", "-c"]
-    environment = {
-      HARVESTER_URL = module.harvester_node.instances_public_ip[0]
-    }
-  }
+  host       = module.harvester_node.instances_public_ip[0]
+  commands = [
+    "sudo sed 's/127.0.0.1/${module.harvester_node.instances_public_ip[0]}/g' /tmp/rke2.yaml"
+  ]
+  user        = local.ssh_username
+  private_key = data.local_file.ssh_private_key.content
+}
+
+resource "local_file" "kube_config_yaml" {
+  filename        = pathexpand(local.kubeconfig_file)
+  content         = ssh_resource.retrieve_kubeconfig.result
+  file_permission = "0600"
 }

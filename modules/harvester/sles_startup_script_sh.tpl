@@ -1,7 +1,9 @@
 #!/bin/bash
 
 # Installation of pre-requisite packages
-sudo zypper --non-interactive install parted util-linux virt-install libvirt qemu-kvm python3-websockify novnc socat nginx
+sudo zypper --non-interactive addrepo https://download.opensuse.org/repositories/network/SLE_15/network.repo
+sudo zypper --non-interactive --gpg-auto-import-keys refresh
+sudo zypper --non-interactive install parted util-linux virt-install libvirt qemu-kvm python3-websockify novnc socat nginx sshpass
 sudo systemctl enable --now libvirtd
 sudo mkdir -p /srv/www/harvester
 
@@ -23,7 +25,6 @@ sudo curl -L -o /srv/www/harvester/harvester-${version}-rootfs-amd64.squashfs \
 sudo curl -L -o /srv/www/harvester/harvester-${version}-amd64.iso \
   https://releases.rancher.com/harvester/${version}/harvester-${version}-amd64.iso && \
   touch /tmp/harvester_download_done
-
 
 # Disk partitioning
 for i in $(seq 1 "${count}"); do
