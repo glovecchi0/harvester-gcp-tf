@@ -63,9 +63,8 @@ ssh rancher@<NESTED_VM_IPV4> # The password can be obtained from variable harves
 
 #### Terraform execution process and Harvester UI access
 
-```
-# terraform.tfvars
-
+```bash
+$ cat terraform.tfvars
 prefix = "jlagos"
 project_id = "<project-id>"
 region = "europe-west8"
