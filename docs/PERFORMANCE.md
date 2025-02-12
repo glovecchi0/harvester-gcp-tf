@@ -21,7 +21,7 @@ tmpfs          tmpfs      13G  8.0K   13G   1% /run/user/1008
 
 # Performance tests
 
-## 1_ W/R test with *dd*
+## 1_ W/R test with *dd* (GCP Disks)
 
 ### Writing
 
@@ -115,7 +115,7 @@ rm /mnt/datadisk2/testfile
 rm /mnt/datadisk3/testfile
 ```
 
-## 2_ Random I/O test with *fio*
+## 2_ Random I/O test with *fio* (GCP Disks)
 
 ### Download *fio*
 
@@ -674,7 +674,41 @@ Run status group 0 (all jobs):
 
 Disk stats (read/write):
   sdc: ios=0/107054385, merge=0/23934400, ticks=0/346722162, in_queue=346725441, util=100.00%
-$ 
+$ fio --name=seq-write --ioengine=libaio --rw=randwrite --bs=4k --filename=/mnt/datadisk3/testfile --size=100GB --direct=1 --numjobs=4 --iodepth=32 --group_reporting
+seq-write: (g=0): rw=randwrite, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=libaio, iodepth=32
+...
+fio-3.23
+Starting 4 processes
+seq-write: Laying out IO file (1 file / 102400MiB)
+Jobs: 4 (f=3): [w(3),f(1)][100.0%][w=152MiB/s][w=38.9k IOPS][eta 00m:00s]
+seq-write: (groupid=0, jobs=4): err= 0: pid=17967: Wed Feb 12 09:59:00 2025
+  write: IOPS=38.1k, BW=149MiB/s (156MB/s)(400GiB/2750742msec); 0 zone resets
+    slat (usec): min=2, max=440200, avg=15.66, stdev=367.05
+    clat (usec): min=181, max=454181, avg=3340.90, stdev=2221.06
+     lat (usec): min=197, max=454199, avg=3356.69, stdev=2248.21
+    clat percentiles (usec):
+     |  1.00th=[  660],  5.00th=[ 2769], 10.00th=[ 2900], 20.00th=[ 2999],
+     | 30.00th=[ 3064], 40.00th=[ 3163], 50.00th=[ 3294], 60.00th=[ 3359],
+     | 70.00th=[ 3458], 80.00th=[ 3523], 90.00th=[ 3654], 95.00th=[ 3785],
+     | 99.00th=[ 6849], 99.50th=[ 8717], 99.90th=[34866], 99.95th=[51119],
+     | 99.99th=[86508]
+   bw (  KiB/s): min=32976, max=385373, per=100.00%, avg=152713.66, stdev=2444.96, samples=21968
+   iops        : min= 8244, max=96343, avg=38178.42, stdev=611.24, samples=21968
+  lat (usec)   : 250=0.01%, 500=0.42%, 750=0.89%, 1000=0.66%
+  lat (msec)   : 2=1.41%, 4=93.78%, 10=2.43%, 20=0.20%, 50=0.15%
+  lat (msec)   : 100=0.05%, 250=0.01%, 500=0.01%
+  cpu          : usr=2.47%, sys=12.06%, ctx=72426067, majf=0, minf=4124
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.1%, 16=0.1%, 32=100.0%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.1%, 64=0.0%, >=64=0.0%
+     issued rwts: total=0,104857600,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=32
+
+Run status group 0 (all jobs):
+  WRITE: bw=149MiB/s (156MB/s), 149MiB/s-149MiB/s (156MB/s-156MB/s), io=400GiB (429GB), run=2750742-2750742msec
+
+Disk stats (read/write):
+  sdd: ios=11/107077919, merge=0/24043780, ticks=24/341958655, in_queue=341962671, util=100.00%
 ```
 
 ### 2.6_ Random Reading
@@ -688,9 +722,108 @@ fio --name=seq-write --ioengine=libaio --rw=randread --bs=4k --filename=/mnt/dat
 #### Results
 
 ```bash
-$
-$
-$
+$ fio --name=seq-write --ioengine=libaio --rw=randread --bs=4k --filename=/mnt/datadisk1/testfile --size=100GB --direct=1 --numjobs=4 --iodepth=32 --group_reporting
+seq-write: (g=0): rw=randread, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=libaio, iodepth=32
+...
+fio-3.23
+Starting 4 processes
+seq-write: Laying out IO file (1 file / 102400MiB)
+Jobs: 3 (f=0): [f(2),_(1),f(1)][100.0%][r=146MiB/s][r=37.4k IOPS][eta 00m:00s]
+seq-write: (groupid=0, jobs=4): err= 0: pid=22399: Wed Feb 12 10:50:53 2025
+  read: IOPS=38.8k, BW=152MiB/s (159MB/s)(400GiB/2699643msec)
+    slat (nsec): min=1772, max=16769k, avg=8577.58, stdev=5298.88
+    clat (usec): min=159, max=43557, avg=3285.76, stdev=150.28
+     lat (usec): min=178, max=43566, avg=3294.45, stdev=150.22
+    clat percentiles (usec):
+     |  1.00th=[ 3097],  5.00th=[ 3163], 10.00th=[ 3195], 20.00th=[ 3228],
+     | 30.00th=[ 3228], 40.00th=[ 3261], 50.00th=[ 3261], 60.00th=[ 3294],
+     | 70.00th=[ 3326], 80.00th=[ 3359], 90.00th=[ 3392], 95.00th=[ 3458],
+     | 99.00th=[ 3589], 99.50th=[ 3687], 99.90th=[ 4113], 99.95th=[ 4555],
+     | 99.99th=[ 6718]
+   bw (  KiB/s): min=152032, max=689752, per=100.00%, avg=155596.67, stdev=1821.07, samples=21564
+   iops        : min=38008, max=172438, avg=38899.17, stdev=455.27, samples=21564
+  lat (usec)   : 250=0.01%, 500=0.03%, 750=0.05%, 1000=0.01%
+  lat (msec)   : 2=0.01%, 4=99.77%, 10=0.13%, 20=0.01%, 50=0.01%
+  cpu          : usr=2.31%, sys=9.83%, ctx=85669011, majf=0, minf=295
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.1%, 16=0.1%, 32=100.0%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.1%, 64=0.0%, >=64=0.0%
+     issued rwts: total=104857600,0,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=32
+
+Run status group 0 (all jobs):
+   READ: bw=152MiB/s (159MB/s), 152MiB/s-152MiB/s (159MB/s-159MB/s), io=400GiB (429GB), run=2699643-2699643msec
+
+Disk stats (read/write):
+  sdb: ios=104849478/227991, merge=0/22116, ticks=344182896/533296, in_queue=344719336, util=100.00%
+$ fio --name=seq-write --ioengine=libaio --rw=randread --bs=4k --filename=/mnt/datadisk2/testfile --size=100GB --direct=1 --numjobs=4 --iodepth=32 --group_reporting
+seq-write: (g=0): rw=randread, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=libaio, iodepth=32
+...
+fio-3.23
+Starting 4 processes
+seq-write: Laying out IO file (1 file / 102400MiB)
+Jobs: 4 (f=4): [r(4)][100.0%][r=152MiB/s][r=38.9k IOPS][eta 00m:01s]
+seq-write: (groupid=0, jobs=4): err= 0: pid=26409: Wed Feb 12 11:58:59 2025
+  read: IOPS=38.8k, BW=152MiB/s (159MB/s)(400GiB/2699604msec)
+    slat (nsec): min=1734, max=18477k, avg=6811.24, stdev=5674.05
+    clat (usec): min=160, max=41722, avg=3287.29, stdev=154.45
+     lat (usec): min=202, max=41729, avg=3294.22, stdev=154.38
+    clat percentiles (usec):
+     |  1.00th=[ 3097],  5.00th=[ 3163], 10.00th=[ 3195], 20.00th=[ 3228],
+     | 30.00th=[ 3228], 40.00th=[ 3261], 50.00th=[ 3294], 60.00th=[ 3294],
+     | 70.00th=[ 3326], 80.00th=[ 3359], 90.00th=[ 3392], 95.00th=[ 3458],
+     | 99.00th=[ 3589], 99.50th=[ 3687], 99.90th=[ 4178], 99.95th=[ 4621],
+     | 99.99th=[ 6980]
+   bw (  KiB/s): min=151544, max=690584, per=100.00%, avg=155605.55, stdev=1829.84, samples=21561
+   iops        : min=37886, max=172646, avg=38901.39, stdev=457.46, samples=21561
+  lat (usec)   : 250=0.01%, 500=0.02%, 750=0.05%, 1000=0.02%
+  lat (msec)   : 2=0.02%, 4=99.75%, 10=0.14%, 20=0.01%, 50=0.01%
+  cpu          : usr=2.38%, sys=8.28%, ctx=86839963, majf=0, minf=1929
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.1%, 16=0.1%, 32=100.0%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.1%, 64=0.0%, >=64=0.0%
+     issued rwts: total=104857600,0,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=32
+
+Run status group 0 (all jobs):
+   READ: bw=152MiB/s (159MB/s), 152MiB/s-152MiB/s (159MB/s-159MB/s), io=400GiB (429GB), run=2699604-2699604msec
+
+Disk stats (read/write):
+  sdc: ios=104851587/233575, merge=0/37697, ticks=344570433/572783, in_queue=345146866, util=100.00%
+$ fio --name=seq-write --ioengine=libaio --rw=randread --bs=4k --filename=/mnt/datadisk3/testfile --size=100GB --direct=1 --numjobs=4 --iodepth=32 --group_reporting
+seq-write: (g=0): rw=randread, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=libaio, iodepth=32
+...
+fio-3.23
+Starting 4 processes
+Jobs: 4 (f=4): [r(4)][100.0%][r=152MiB/s][r=38.8k IOPS][eta 00m:00s]
+seq-write: (groupid=0, jobs=4): err= 0: pid=560: Wed Feb 12 13:57:24 2025
+  read: IOPS=38.9k, BW=152MiB/s (159MB/s)(400GiB/2698908msec)
+    slat (nsec): min=1732, max=22302k, avg=6395.42, stdev=4847.74
+    clat (usec): min=42, max=51788, avg=3286.98, stdev=163.38
+     lat (usec): min=225, max=51796, avg=3293.50, stdev=163.32
+    clat percentiles (usec):
+     |  1.00th=[ 3097],  5.00th=[ 3163], 10.00th=[ 3195], 20.00th=[ 3228],
+     | 30.00th=[ 3228], 40.00th=[ 3261], 50.00th=[ 3294], 60.00th=[ 3294],
+     | 70.00th=[ 3326], 80.00th=[ 3359], 90.00th=[ 3392], 95.00th=[ 3458],
+     | 99.00th=[ 3556], 99.50th=[ 3654], 99.90th=[ 4080], 99.95th=[ 4490],
+     | 99.99th=[ 7046]
+   bw (  KiB/s): min=148753, max=686729, per=100.00%, avg=155638.14, stdev=1810.86, samples=21556
+   iops        : min=37188, max=171682, avg=38909.54, stdev=452.71, samples=21556
+  lat (usec)   : 50=0.01%, 250=0.01%, 500=0.03%, 750=0.06%, 1000=0.01%
+  lat (msec)   : 2=0.02%, 4=99.78%, 10=0.11%, 20=0.01%, 50=0.01%
+  lat (msec)   : 100=0.01%
+  cpu          : usr=2.31%, sys=7.91%, ctx=87561713, majf=0, minf=6003
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.1%, 16=0.1%, 32=100.0%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.1%, 64=0.0%, >=64=0.0%
+     issued rwts: total=104857600,0,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=32
+
+Run status group 0 (all jobs):
+   READ: bw=152MiB/s (159MB/s), 152MiB/s-152MiB/s (159MB/s-159MB/s), io=400GiB (429GB), run=2698908-2698908msec
+
+Disk stats (read/write):
+  sdd: ios=104853821/227228, merge=0/21238, ticks=344623312/527267, in_queue=345153507, util=100.00%
 ```
 
 **Remember to delete files after testing to free up space.**
@@ -700,3 +833,5 @@ rm /mnt/datadisk1/testfile
 rm /mnt/datadisk2/testfile
 rm /mnt/datadisk3/testfile
 ```
+
+## 3_ Random I/O test with *fio* (Longhorn Volumes)
