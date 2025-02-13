@@ -4,7 +4,7 @@
 #### Export kubeConfig file a to access Harvester cluster from CLI
 
 ```console
-export kubeconfig=<prefix>_kube_config.yaml
+export KUBECONFIG=<prefix>_kube_config.yaml
 ```
 ![](../images/VM_SETUP_AND_SSH_LOGIN-1.png)
 
