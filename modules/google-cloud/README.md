@@ -6,24 +6,24 @@ In order for Terraform to run operations on your behalf, you must [install and c
 
 #### macOS installation and setup
 
-```console
+```bash
 brew install --cask google-cloud-sdk
 ```
 
-```console 
+```bash
 gcloud components install gke-gcloud-auth-plugin
 ```
 
-```console 
+```bash
 gcloud init
 ```
 
-```console 
+```bash
 gcloud auth application-default login
 ```
 
 ##### If there are other active accounts, run
 
-```console 
+```bash
 gcloud config set account `ACCOUNT`
 ```

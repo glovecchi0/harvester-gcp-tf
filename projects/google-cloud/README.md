@@ -42,7 +42,6 @@ tofu destroy -auto-approve
 export KUBECONFIG=<prefix>_kube_config.yaml
 ```
 
-
 ## How to access Google VMs
 
 #### Run the following command
@@ -63,7 +62,7 @@ ssh rancher@<NESTED_VM_IPV4> # The password can be obtained from variable harves
 
 #### Terraform execution process and Harvester UI access
 
-```bash
+```console
 $ cat terraform.tfvars
 prefix = "jlagos"
 project_id = "<project-id>"
@@ -72,20 +71,20 @@ harvester_node_count = 3
 harvester_cluster_size = "small"
 ```
 
-![](../../images/1-tfinitial-execution.png)
-![](../../images/2-waiting-until-harvester-is-up.png)
-![](../../images/3-tf-output.png)
-![](../../images/4-harvester-login-page.png)
-![](../../images/5-harvester-hosts.png)
+![](../../images/GCP_PROJ_README_1.png)
+![](../../images/GCP_PROJ_README_2.png)
+![](../../images/GCP_PROJ_README_3.png)
+![](../../images/GCP_PROJ_README_4.png)
+![](../../images/GCP_PROJ_README_5.png)
 
 #### SSH into GCP VM
 
-![](../../images/6-gcp-vm-ssh.png)
+![](../../images/GCP_PROJ_README_6.png)
 
 #### SSH from GCP VM to Harvester Nested VM
 
-![](../../images/7-nested-vm-ssh.png)
+![](../../images/GCP_PROJ_README_7.png)
 
 #### Kubectl commands execution
 
-![](../../images/8-kubectl-commands.png)
+![](../../images/GCP_PROJ_README_8.png)

@@ -6,23 +6,23 @@ Install the Terraform Command Line Interface [(CLI)](https://developer.hashicorp
 
 #### macOS installation and setup
 
-```console
+```bash
 brew tap hashicorp/tap
 ```
 
-```console 
+```bash
 brew install hashicorp/tap/terraform
 ```
 
-```console 
+```bash
 brew update
 ```
 
-```console 
+```bash
 brew upgrade hashicorp/tap/terraform
 ```
 
-```console
+```bash
 terraform version
 ```
 
