@@ -6,15 +6,15 @@ Install the OpenTofu Command Line Interface [(CLI)](https://opentofu.org/docs/in
 
 #### macOS installation and setup
 
-```console
+```bash
 brew update
 ```
 
-```console 
+```bash
 brew install opentofu
 ```
 
-```console
+```bash
 tofu version
 ```
 
