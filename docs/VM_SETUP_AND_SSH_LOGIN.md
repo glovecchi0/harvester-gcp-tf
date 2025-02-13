@@ -43,17 +43,6 @@ sudo mv virtctl /usr/local/bin/
 virtctl version
 ```
 
-#### Install Virtctl command in your CLI
-
-```console
-export VERSION=v0.54.0
-wget https://github.com/kubevirt/kubevirt/releases/download/${VERSION}/virtctl-${VERSION}-darwin-amd64
-mv virtctl-v0.54.0-darwin-amd64 virtctl
-chmod +x virtctl
-sudo mv virtctl /usr/local/bin/
-virtctl version
-```
-
 #### How to access Ubuntu machine created through virtctl from CLI 
 
 ```console
