@@ -48,6 +48,7 @@ virtctl version
 ```console
 kubectl -n <VM_NAMESPACE> get vmi
 virtctl ssh --local-ssh=true <SSH_USERNAME>@vmi/<VM_NAME>.<VM_NAMESPACE>
+password: ubuntu
 ```
 
 ![](../images/VM_SETUP_AND_SSH_LOGIN-5.png)
