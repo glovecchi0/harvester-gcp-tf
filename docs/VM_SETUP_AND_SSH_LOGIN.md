@@ -4,21 +4,21 @@
 
 #### Export kubeConfig file a to access Harvester cluster from CLI
 
-```bash
+```console
 export KUBECONFIG=<prefix>_kube_config.yaml
 ```
 ![](../images/VM_SETUP_AND_SSH_LOGIN-1.png)
 
 #### Access Harvester UI to upload Ubuntu Image
 
-```bash
+```console
 URL: https://cloud-images.ubuntu.com/releases/22.04/release/ubuntu-22.04-server-cloudimg-amd64.img
 ```
 ![](../images/VM_SETUP_AND_SSH_LOGIN-2.png)
 
 #### Create user-data Cloud Configuration Template in Harvester with the following Script
 
-```bash
+```console
 #!/bin/bash
 sudo adduser -U -m "ubuntu"
 echo "ubuntu:ubuntu" | chpasswd
@@ -34,7 +34,7 @@ sudo systemctl restart ssh
 
 #### Install Virtctl command in your CLI
 
-```bash
+```console
 export VERSION=v0.54.0
 wget https://github.com/kubevirt/kubevirt/releases/download/${VERSION}/virtctl-${VERSION}-darwin-amd64
 mv virtctl-v0.54.0-darwin-amd64 virtctl
@@ -45,7 +45,7 @@ virtctl version
 
 #### How to access Ubuntu machine created through virtctl from CLI 
 
-```bash
+```console
 kubectl -n <VM_NAMESPACE> get vmi
 virtctl ssh --local-ssh=true <SSH_USERNAME>@vmi/<VM_NAME>.<VM_NAMESPACE>
 password: ubuntu
